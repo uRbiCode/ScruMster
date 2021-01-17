@@ -36,8 +36,12 @@ namespace ScruMster.Areas.Identity.Pages.Account.Manage
             public string FirstName { get; set; }
 
             [Required]
+            [DataType(DataType.Text)]
             [Display(Name = "Last name")]
             public string LastName { get; set; }
+            [Required]
+            [Display(Name = "Is boss?")]
+            public bool IsBoss { get; set; }
 
             [Phone]
             [Display(Name = "Phone number")]
@@ -55,6 +59,8 @@ namespace ScruMster.Areas.Identity.Pages.Account.Manage
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                IsBoss = user.IsBoss,
+
                 PhoneNumber = phoneNumber
             };
         }
@@ -105,6 +111,11 @@ namespace ScruMster.Areas.Identity.Pages.Account.Manage
             {
                 user.LastName = Input.LastName;
             }
+            if (Input.IsBoss != user.IsBoss)
+            {
+                user.IsBoss = Input.IsBoss;
+            }
+
             await _userManager.UpdateAsync(user);
 
             await _signInManager.RefreshSignInAsync(user);
