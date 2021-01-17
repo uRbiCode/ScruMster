@@ -54,9 +54,8 @@ namespace ScruMster.Areas.Identity.Pages.Account
             [Display(Name = "Last name")]
             [DataType(DataType.Text)]
             public string LastName { get; set; }
-            [Required]
-            [Display(Name = "Is boss?")]
-            [Range(typeof(bool), "true", "true")]
+
+            [Display(Name = "Is boss")]
             public bool IsBoss { get; set; }
 
             [Required]

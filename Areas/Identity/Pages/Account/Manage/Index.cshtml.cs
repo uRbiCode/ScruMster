@@ -39,8 +39,8 @@ namespace ScruMster.Areas.Identity.Pages.Account.Manage
             [DataType(DataType.Text)]
             [Display(Name = "Last name")]
             public string LastName { get; set; }
-            [Required]
-            [Display(Name = "Is boss?")]
+
+            [Display(Name = "Is boss")]
             public bool IsBoss { get; set; }
 
             [Phone]
