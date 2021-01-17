@@ -10,8 +10,8 @@ using ScruMster.Data;
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-    [Migration("20210117173038_CustomUserData")]
-    partial class CustomUserData
+    [Migration("20210117201321_CustomUserData2")]
+    partial class CustomUserData2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -206,6 +206,9 @@ namespace ScruMster.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("TeamID")
+                        .HasColumnType("int");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -223,7 +226,27 @@ namespace ScruMster.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("TeamID");
+
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("ScruMster.Areas.Identity.Data.Team", b =>
+                {
+                    b.Property<int>("TeamID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("Creator")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TeamID");
+
+                    b.ToTable("Team");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -275,6 +298,20 @@ namespace ScruMster.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ScruMster.Areas.Identity.Data.ScruMsterUser", b =>
+                {
+                    b.HasOne("ScruMster.Areas.Identity.Data.Team", "Team")
+                        .WithMany("Users")
+                        .HasForeignKey("TeamID");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ScruMster.Areas.Identity.Data.Team", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

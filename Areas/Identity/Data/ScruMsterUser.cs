@@ -9,6 +9,7 @@ namespace ScruMster.Areas.Identity.Data
         public string FirstName { get; set; }
         [PersonalData]
         public string LastName { get; set; }
+        [PersonalData]
         public bool IsBoss { get; set; }
         public virtual Team Team { get; set; }
         //public virtual ICollection<Sprint> Sprints { get; set; }

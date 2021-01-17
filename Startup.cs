@@ -38,8 +38,7 @@ namespace ScruMster
 
             services.AddDbContext<ScruMsterContext>(options =>
         // options.UseSqlite(
-        options.UseSqlServer(
-            Configuration.GetConnectionString("ConnectionStrings")));
+        options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ScruMster;Trusted_Connection=True;MultipleActiveResultSets=true"));
             // services.AddDatabaseDeveloperPageExceptionFilter(); //nie dzia³a
 
 
