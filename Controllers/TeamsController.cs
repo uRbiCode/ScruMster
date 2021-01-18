@@ -32,6 +32,23 @@ namespace ScruMster.Controllers
 
             var team = await _context.Team
                 .FirstOrDefaultAsync(m => m.TeamID == id);
+
+            /////////////////////////////////////
+            //List<string> l = new List<string>();
+            //l.Add("astring");
+            //var u = await _context.Team.Find()
+            //ICollection col1 = (ICollection)this.Users;
+            //ICollection<string> col2 = (ICollection<string>)l;
+
+            ////example 1
+            //IEnumerator e1 = col1.GetEnumerator();
+            //if (e1.MoveNext())
+            //    Console.WriteLine(e1.Current);
+
+            ////example 2
+            //if (col2.Count != 0)
+            //    Console.WriteLine(col2.Single());
+            /////////////////////////////////////
             if (team == null)
             {
                 return NotFound();
