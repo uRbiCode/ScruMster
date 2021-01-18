@@ -51,7 +51,7 @@ namespace ScruMster.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TeamID,Name,Creator")] Team team)
+        public async Task<IActionResult> Create([Bind("TeamID,Name,Creator,Users")] Team team)
         {
             if (ModelState.IsValid)
             {
@@ -83,7 +83,7 @@ namespace ScruMster.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TeamID,Name,Creator")] Team team)
+        public async Task<IActionResult> Edit(int id, [Bind("TeamID,Name,Creator,Users")] Team team)
         {
             if (id != team.TeamID)
             {
