@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ScruMster.Migrations
 {
-    public partial class MyMigration : Migration
+    public partial class m1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -22,17 +22,16 @@ namespace ScruMster.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Team",
+                name: "Teams",
                 columns: table => new
                 {
                     TeamID = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Creator = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Team", x => x.TeamID);
+                    table.PrimaryKey("PK_Teams", x => x.TeamID);
                 });
 
             migrationBuilder.CreateTable(
@@ -84,9 +83,31 @@ namespace ScruMster.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_Team_TeamID",
+                        name: "FK_AspNetUsers_Teams_TeamID",
                         column: x => x.TeamID,
-                        principalTable: "Team",
+                        principalTable: "Teams",
+                        principalColumn: "TeamID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sprints",
+                columns: table => new
+                {
+                    SprintID = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
+                    Deadline = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDone = table.Column<bool>(type: "bit", nullable: false),
+                    TeamID = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sprints", x => x.SprintID);
+                    table.ForeignKey(
+                        name: "FK_Sprints_Teams_TeamID",
+                        column: x => x.TeamID,
+                        principalTable: "Teams",
                         principalColumn: "TeamID",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -176,6 +197,30 @@ namespace ScruMster.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ScruMsterUserSprint",
+                columns: table => new
+                {
+                    ScruMsterUsersId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    SprintsSprintID = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ScruMsterUserSprint", x => new { x.ScruMsterUsersId, x.SprintsSprintID });
+                    table.ForeignKey(
+                        name: "FK_ScruMsterUserSprint_AspNetUsers_ScruMsterUsersId",
+                        column: x => x.ScruMsterUsersId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ScruMsterUserSprint_Sprints_SprintsSprintID",
+                        column: x => x.SprintsSprintID,
+                        principalTable: "Sprints",
+                        principalColumn: "SprintID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -219,6 +264,16 @@ namespace ScruMster.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ScruMsterUserSprint_SprintsSprintID",
+                table: "ScruMsterUserSprint",
+                column: "SprintsSprintID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Sprints_TeamID",
+                table: "Sprints",
+                column: "TeamID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -239,13 +294,19 @@ namespace ScruMster.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "ScruMsterUserSprint");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Team");
+                name: "Sprints");
+
+            migrationBuilder.DropTable(
+                name: "Teams");
         }
     }
 }

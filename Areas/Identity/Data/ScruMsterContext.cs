@@ -18,7 +18,8 @@ namespace ScruMster.Data
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
-
-        public DbSet<ScruMster.Areas.Identity.Data.Team> Team { get; set; }
+        public DbSet<ScruMsterUser> ScruMsterUsers { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<Sprint> Sprints { get; set; }
     }
 }

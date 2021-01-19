@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 
 namespace ScruMster.Areas.Identity.Data
 {
@@ -11,7 +12,8 @@ namespace ScruMster.Areas.Identity.Data
         public string LastName { get; set; }
         [PersonalData]
         public bool IsBoss { get; set; }
+        public int? TeamID { get; set; }
         public virtual Team Team { get; set; }
-        //public virtual ICollection<Sprint> Sprints { get; set; }
+        public virtual ICollection<Sprint> Sprints { get; set; }
     }
 }

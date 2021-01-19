@@ -10,8 +10,8 @@ using ScruMster.Data;
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-    [Migration("20210117214844_MyMigration")]
-    partial class MyMigration
+    [Migration("20210121152225_m1")]
+    partial class m1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -231,6 +231,37 @@ namespace ScruMster.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("ScruMster.Areas.Identity.Data.Sprint", b =>
+                {
+                    b.Property<int>("SprintID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Deadline")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("TeamID")
+                        .HasColumnType("int");
+
+                    b.HasKey("SprintID");
+
+                    b.HasIndex("TeamID");
+
+                    b.ToTable("Sprints");
+                });
+
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Team", b =>
                 {
                     b.Property<int>("TeamID")
@@ -238,15 +269,29 @@ namespace ScruMster.Migrations
                         .HasColumnType("int")
                         .UseIdentityColumn();
 
-                    b.Property<string>("Creator")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("TeamID");
 
-                    b.ToTable("Team");
+                    b.ToTable("Teams");
+                });
+
+            modelBuilder.Entity("ScruMsterUserSprint", b =>
+                {
+                    b.Property<string>("ScruMsterUsersId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("SprintsSprintID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ScruMsterUsersId", "SprintsSprintID");
+
+                    b.HasIndex("SprintsSprintID");
+
+                    b.ToTable("ScruMsterUserSprint");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -303,15 +348,41 @@ namespace ScruMster.Migrations
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.ScruMsterUser", b =>
                 {
                     b.HasOne("ScruMster.Areas.Identity.Data.Team", "Team")
-                        .WithMany("Users")
+                        .WithMany("ScruMsterUsers")
                         .HasForeignKey("TeamID");
 
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("ScruMster.Areas.Identity.Data.Sprint", b =>
+                {
+                    b.HasOne("ScruMster.Areas.Identity.Data.Team", "Team")
+                        .WithMany("Sprints")
+                        .HasForeignKey("TeamID");
+
+                    b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("ScruMsterUserSprint", b =>
+                {
+                    b.HasOne("ScruMster.Areas.Identity.Data.ScruMsterUser", null)
+                        .WithMany()
+                        .HasForeignKey("ScruMsterUsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ScruMster.Areas.Identity.Data.Sprint", null)
+                        .WithMany()
+                        .HasForeignKey("SprintsSprintID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Team", b =>
                 {
-                    b.Navigation("Users");
+                    b.Navigation("ScruMsterUsers");
+
+                    b.Navigation("Sprints");
                 });
 #pragma warning restore 612, 618
         }
