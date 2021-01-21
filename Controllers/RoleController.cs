@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 
-namespace TestAppAuthAndAuthorize.Controllers
+namespace ScruMster.Controllers
 {
     public class RoleController : Controller
     {
@@ -15,14 +15,14 @@ namespace TestAppAuthAndAuthorize.Controllers
             this.roleManager = roleManager;
         }
 
-        [Authorize(Policy = "readpolicy")]
+        [Authorize(Roles = "Admin, Manager, User")]
         public IActionResult Index()
         {
             var roles = roleManager.Roles.ToList();
             return View(roles);
         }
 
-        [Authorize(Policy = "writepolicy")]
+        [Authorize(Roles = "Admin, Manager")]
         public IActionResult Create()
         {
             return View(new IdentityRole());
