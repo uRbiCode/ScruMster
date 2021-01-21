@@ -174,17 +174,18 @@ namespace ScruMster.Controllers
 
 
             var allScruMsterUsers = _context.ScruMsterUsers;
-            var teamScruMsterUsers = new HashSet<string>(team.ScruMsterUsers.Select(c => c.Email));
-            var viewModel = new List<TeamScruMsterUser>();
+            var teamScruMsterUsers = new HashSet<string>(team.ScruMsterUsers.Select(c => c.Id));
+            var viewModel = new List<ScruMsterUser>();
             foreach (var user in allScruMsterUsers)
             {
-                viewModel.Add(new TeamScruMsterUser
+                viewModel.Add(new ScruMsterUser
                 {
                     Email = user.Email,
-                    Assigned = teamScruMsterUsers.Contains(user.Email)
+                    Id = user.Id,
+                    Assigned = teamScruMsterUsers.Contains(user.Id)
                 });
             }
-            ViewBag.Courses = viewModel;
+            ViewBag.TotalUsers = viewModel;
         }
     }
 }

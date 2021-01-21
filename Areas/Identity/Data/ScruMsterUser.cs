@@ -15,5 +15,6 @@ namespace ScruMster.Areas.Identity.Data
         public int? TeamID { get; set; }
         public virtual Team Team { get; set; }
         public virtual ICollection<Sprint> Sprints { get; set; }
+        public bool Assigned { get; set; }
     }
 }

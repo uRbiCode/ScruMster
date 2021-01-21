@@ -25,33 +25,25 @@
                         <tr>
                             @{
                                 int cnt = 0;
-                                var scruMsterUsers = new List<ScruMster.Areas.Identity.Data.TeamScruMsterUser>();
-
-                                scruMsterUsers = ViewBag.ScruMsterUsers;
-
-                                foreach (var scruMsterUser in scruMsterUsers)
-                                {
-                                    if (cnt++ % 3 == 0)
+                                    foreach (var scruMsterUser in (IEnumerable<ScruMster.Areas.Identity.Data.ScruMsterUser>)ViewBag.TotalUsers)
                                     {
-                                    @:</tr><tr>
+                                        if (cnt++ % 3 == 0)
+                                        {
+                                        @:</tr><tr>
+                                        }
+                                        @:<td>
+                                            <input type="checkbox"
+                                                   name="selectedScruMsterUsers"
+                                                   value="@scruMsterUser.Id"
+                                                   @(Html.Raw(scruMsterUser.Assigned ? "checked=\"checked\"" : "")) />
+                                             @scruMsterUser.FirstName  @scruMsterUser.LastName
+                                        @:</td>
                                     }
-                                    @:<td>
-                                        <input type="checkbox"
-                                               name="selectedScruMsterUsers"
-                                               value="@scruMsterUser.Email"
-                                               @(Html.Raw(scruMsterUser.Assigned ? "checked=\"checked\"" : "")) />
-                                        @scruMsterUser.Email @:  @scruMsterUser.Email
-                                    @:</td>
                                 }
-                            @:</tr>
-                            }
-                        </table>
+                            </tr>
+                        </table>     
                     </div>
                 </div>
-
-
-
-
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />
                 </div>
