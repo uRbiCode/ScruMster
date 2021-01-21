@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace ScruMster.Controllers
 {
+    [Authorize(Roles = "Admin, Manager, User")]
     public class RoleController : Controller
     {
         RoleManager<IdentityRole> roleManager;
@@ -15,7 +16,6 @@ namespace ScruMster.Controllers
             this.roleManager = roleManager;
         }
 
-        [Authorize(Roles = "Admin, Manager, User")]
         public IActionResult Index()
         {
             var roles = roleManager.Roles.ToList();
