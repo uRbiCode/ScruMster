@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TestAppAuthAndAuthorize.Controllers
 {
@@ -14,12 +15,14 @@ namespace TestAppAuthAndAuthorize.Controllers
             this.roleManager = roleManager;
         }
 
+        [Authorize(Policy = "readpolicy")]
         public IActionResult Index()
         {
             var roles = roleManager.Roles.ToList();
             return View(roles);
         }
 
+        [Authorize(Policy = "writepolicy")]
         public IActionResult Create()
         {
             return View(new IdentityRole());

@@ -46,12 +46,19 @@ namespace ScruMster
             /*services.AddDbContext<ScruMsterContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));*/
-            services.AddIdentity<ScruMsterUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<ScruMsterUser, IdentityRole>()
                  .AddDefaultUI()
                  .AddEntityFrameworkStores<ScruMsterContext>()
                  .AddDefaultTokenProviders();
             //services.AddControllersWithViews();
             //services.AddRazorPages();
+
+            services.AddAuthorization(options => {
+                options.AddPolicy("readpolicy",
+                    builder => builder.RequireRole("Admin", "Manager", "User"));
+                options.AddPolicy("writepolicy",
+                    builder => builder.RequireRole("Admin", "Manager"));
+            });
 
             //end of role testing
 
