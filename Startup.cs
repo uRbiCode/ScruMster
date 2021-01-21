@@ -25,10 +25,10 @@ namespace ScruMster
             services.AddControllersWithViews(); //zamiana
             services.AddRazorPages();
 
-            services.AddIdentity<ScruMsterUser, IdentityRole>()
-        .AddEntityFrameworkStores<ScruMsterContext>()
-        .AddDefaultTokenProviders()
-        .AddDefaultUI();
+            /*            services.AddIdentity<ScruMsterUser, IdentityRole>()
+                    .AddEntityFrameworkStores<ScruMsterContext>()
+                    .AddDefaultTokenProviders()
+                    .AddDefaultUI();*/
 
             //2Fa
             //services.AddTransient<IEmailSender, YourEmailSender>();
@@ -42,8 +42,8 @@ namespace ScruMster
             // services.AddDatabaseDeveloperPageExceptionFilter(); //nie dzia³a
 
 
-            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            //.AddEntityFrameworkStores<ScruMsterContext>();
+            services.AddDefaultIdentity<ScruMsterUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            .AddEntityFrameworkStores<ScruMsterContext>();
 
             services.Configure<IdentityOptions>(options =>
             {
