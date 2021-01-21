@@ -1,3 +1,4 @@
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -22,28 +23,37 @@ namespace ScruMster
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
             services.AddControllersWithViews(); //zamiana
             services.AddRazorPages();
 
-            services.AddIdentity<ScruMsterUser, IdentityRole>()
+        /*    services.AddIdentity<ScruMsterUser, IdentityRole>()
         .AddEntityFrameworkStores<ScruMsterContext>()
         .AddDefaultTokenProviders()
-        .AddDefaultUI();
+        .AddDefaultUI(); */
 
             //2Fa
             //services.AddTransient<IEmailSender, YourEmailSender>();
             //services.AddTransient<IEmailSender, YourSmsSender>();
-
             //services.AddScoped<IUserClaimsPrincipalFactory<ScruMsterUser>>();
 
-            services.AddDbContext<ScruMsterContext>(options =>
-        // options.UseSqlite(
+        services.AddDbContext<ScruMsterContext>(options =>
         options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ScruMster;Trusted_Connection=True;MultipleActiveResultSets=true"));
-            // services.AddDatabaseDeveloperPageExceptionFilter(); //nie dzia³a
 
 
-            //services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            //.AddEntityFrameworkStores<ScruMsterContext>();
+            //role testing below
+
+            /*services.AddDbContext<ScruMsterContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));*/
+            services.AddIdentity<ScruMsterUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                 .AddDefaultUI()
+                 .AddEntityFrameworkStores<ScruMsterContext>()
+                 .AddDefaultTokenProviders();
+            //services.AddControllersWithViews();
+            //services.AddRazorPages();
+
+            //end of role testing
 
             services.Configure<IdentityOptions>(options =>
             {
