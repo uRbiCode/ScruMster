@@ -1,4 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @using ScruMster.Areas.Identity.Data
 
 @inject SignInManager<ScruMsterUser> SignInManager
@@ -8,6 +8,15 @@
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Teams" asp-action="Index">Team</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Sprints" asp-action="Index">Sprint</a>
+        </li>
+        <li class="nav-item">
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="Index">Role</a>
+        </li>
             <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
         </li>
         <li class="nav-item">
@@ -16,24 +25,21 @@
                 >
                 <button id="logout" type="submit" class="nav-link btn btn-link text-dark">Logout</button>
             </form>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Teams" asp-action="Index">Team</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Sprints" asp-action="Index">Sprint</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="Index">Role</a>
+
         </li>
     }
     else
     {
-        <li class="nav-item">
-            <a class="nav-link text-dark" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
-        </li>
+
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+            <button type="button" class="btn btn-outline-primary btn-sm">
+                <a class="" navbar-toggler navbar-toggler-right" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            </button>
+        </div>
+        <div class="btn-group mr-2" role="group" aria-label="Second group">
+            <button type="button" class="btn btn-outline-primary btn-sm">
+                <a class="class=" navbar-toggler navbar-toggler-right" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            </button>
+        </div>
     }
 </ul>

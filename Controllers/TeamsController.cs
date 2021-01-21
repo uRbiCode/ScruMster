@@ -35,7 +35,7 @@ namespace ScruMster.Controllers
                 return NotFound();
             }
 
-            var team = await _context.Teams
+            var team = await _context.Teams.Include(t => t.Sprints)
                 .FirstOrDefaultAsync(m => m.TeamID == id);
             if (team == null)
             {
