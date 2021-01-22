@@ -9,6 +9,7 @@ using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.Globalization;
 
 namespace ScruMster.Controllers
 {
@@ -60,15 +61,19 @@ namespace ScruMster.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TeamID,Name")] Team team, string[] selectedUsers)
+        public async Task<IActionResult> Create([Bind("TeamID,Name")] Team team, string[] selectedScruMsterUsers)
         {
-            if (selectedUsers != null)
+            if (selectedScruMsterUsers != null)
             {
                 team.ScruMsterUsers = new List<ScruMsterUser>();
-                foreach (var user in selectedUsers)
+                foreach (var user in selectedScruMsterUsers)
                 {
-                    var userToAdd = _context.ScruMsterUsers.Find(int.Parse(user));
+                    var userToAdd = _context.ScruMsterUsers.Find(user);
                     team.ScruMsterUsers.Add(userToAdd);
+                }
+                foreach (var teammember in team.ScruMsterUsers)
+                {
+                    teammember.Assigned = true;
                 }
             }
             if (ModelState.IsValid)
@@ -77,7 +82,7 @@ namespace ScruMster.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            PopulateTeamScruMsterUser(team);
+            //PopulateTeamScruMsterUser(team);
             return View(team);
         }
 
@@ -156,6 +161,19 @@ namespace ScruMster.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var team = await _context.Teams.FindAsync(id);
+            if (team != null)
+            {
+                var allScruMsterUsers = _context.ScruMsterUsers;
+
+                foreach (var user in allScruMsterUsers)
+                {
+                    if (user.TeamID == id)
+                    {
+                        user.TeamID = null;
+                        user.Assigned = false;
+                    }                     
+                }
+            }
             _context.Teams.Remove(team);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -170,26 +188,22 @@ namespace ScruMster.Controllers
 
         private void PopulateTeamScruMsterUser(Team team)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userName = User.FindFirstValue(ClaimTypes.Name);
-            var userEmail = User.FindFirstValue(ClaimTypes.Email);
-
-
-
-
             var allScruMsterUsers = _context.ScruMsterUsers;
             var teamScruMsterUsers = new HashSet<string>(team.ScruMsterUsers.Select(c => c.Id));
             var viewModel = new List<ScruMsterUser>();
             foreach (var user in allScruMsterUsers)
             {
-                viewModel.Add(new ScruMsterUser
+                if (!user.Assigned)
                 {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    TeamID = user.TeamID,
-                    Assigned = teamScruMsterUsers.Contains(user.Id)
-                });
+                    viewModel.Add(new ScruMsterUser
+                    {
+                        Id = user.Id,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        TeamID = user.TeamID,
+                        Assigned = teamScruMsterUsers.Contains(user.Id)
+                    });
+                }
             }
             ViewBag.TotalUsers = viewModel;
         }
