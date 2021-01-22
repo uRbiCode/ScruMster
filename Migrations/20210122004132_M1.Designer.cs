@@ -10,7 +10,7 @@ using ScruMster.Data;
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-    [Migration("20210121221053_M1")]
+    [Migration("20210122004132_M1")]
     partial class M1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -159,6 +159,9 @@ namespace ScruMster.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Assigned")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()

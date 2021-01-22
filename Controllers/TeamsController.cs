@@ -187,6 +187,7 @@ namespace ScruMster.Controllers
                     Id = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
+                    TeamID = user.TeamID,
                     Assigned = teamScruMsterUsers.Contains(user.Id)
                 });
             }
