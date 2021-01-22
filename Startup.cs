@@ -27,11 +27,6 @@ namespace ScruMster
             services.AddControllersWithViews(); //zamiana
             services.AddRazorPages();
 
-        /*    services.AddIdentity<ScruMsterUser, IdentityRole>()
-        .AddEntityFrameworkStores<ScruMsterContext>()
-        .AddDefaultTokenProviders()
-        .AddDefaultUI(); */
-
             //2Fa
             //services.AddTransient<IEmailSender, YourEmailSender>();
             //services.AddTransient<IEmailSender, YourSmsSender>();
@@ -41,19 +36,11 @@ namespace ScruMster
         options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ScruMster;Trusted_Connection=True;MultipleActiveResultSets=true"));
 
 
-            //role testing below
 
-            /*services.AddDbContext<ScruMsterContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));*/
             services.AddIdentity<ScruMsterUser, IdentityRole>()
                  .AddDefaultUI()
                  .AddEntityFrameworkStores<ScruMsterContext>()
                  .AddDefaultTokenProviders();
-            //services.AddControllersWithViews();
-            //services.AddRazorPages();
-
-            //end of role testing
 
             services.Configure<IdentityOptions>(options =>
             {
