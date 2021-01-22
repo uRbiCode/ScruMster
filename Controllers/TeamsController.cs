@@ -10,6 +10,7 @@ using ScruMster.Data;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Globalization;
+using Microsoft.AspNetCore.Identity;
 
 namespace ScruMster.Controllers
 {
@@ -17,10 +18,12 @@ namespace ScruMster.Controllers
     public class TeamsController : Controller
     {
         private readonly ScruMsterContext _context;
+        private UserManager<ScruMsterUser> _userManager;
 
-        public TeamsController(ScruMsterContext context)
+        public TeamsController(ScruMsterContext context, UserManager<ScruMsterUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Teams
@@ -65,6 +68,9 @@ namespace ScruMster.Controllers
         {
             if (selectedScruMsterUsers != null)
             {
+                var owner = await _userManager.GetUserAsync(User);
+                team.ownerID = owner.Id;
+                team.owner = owner;
                 team.ScruMsterUsers = new List<ScruMsterUser>();
                 foreach (var user in selectedScruMsterUsers)
                 {
@@ -188,6 +194,7 @@ namespace ScruMster.Controllers
         private void PopulateTeamScruMsterUser(Team team)
         {
             var allScruMsterUsers = _context.ScruMsterUsers;
+            var availableUsers = new List<ScruMsterUser>();
             var teamScruMsterUsers = new HashSet<string>(team.ScruMsterUsers.Select(c => c.Id));
             var viewModel = new List<ScruMsterUser>();
             foreach (var user in allScruMsterUsers)
@@ -203,6 +210,7 @@ namespace ScruMster.Controllers
                         Assigned = teamScruMsterUsers.Contains(user.Id)
                     });
                 }
+                    
             }
             ViewBag.TotalUsers = viewModel;
         }

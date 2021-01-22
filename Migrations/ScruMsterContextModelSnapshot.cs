@@ -272,6 +272,9 @@ namespace ScruMster.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<string>("ownerID")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("TeamID");
 
                     b.ToTable("Teams");
