@@ -11,7 +11,6 @@ namespace ScruMster.Areas.Identity.Data
         [PersonalData]
         public string LastName { get; set; }
         [PersonalData]
-        public bool IsBoss { get; set; }
         public int? TeamID { get; set; }
         public virtual Team Team { get; set; }
         public virtual ICollection<Sprint> Sprints { get; set; }
