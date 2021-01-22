@@ -180,7 +180,6 @@ namespace ScruMster.Controllers
             {
                 viewModel.Add(new ScruMsterUser
                 {
-                    Email = user.Email,
                     Id = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
