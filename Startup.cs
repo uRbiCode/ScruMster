@@ -83,14 +83,28 @@ namespace ScruMster
             var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var UserManager = serviceProvider.GetRequiredService<UserManager<ScruMsterUser>>();
 
-            IdentityResult roleResult;
+            IdentityResult roleResultAdmin;
+            IdentityResult roleResultManager;
+            IdentityResult roleResultUser;
 
             // Adding Admin Role
-            var roleCheck = await RoleManager.RoleExistsAsync("Admin");
-            if (!roleCheck)
+            var roleCheckAdmin = await RoleManager.RoleExistsAsync("Admin");
+            var roleCheckManager = await RoleManager.RoleExistsAsync("Manager");
+            var roleCheckUser = await RoleManager.RoleExistsAsync("User");
+            if (!roleCheckAdmin)
             {
                 //Create the roles and seed them to the database 
-                roleResult = await RoleManager.CreateAsync(new IdentityRole("Admin"));
+                roleResultAdmin = await RoleManager.CreateAsync(new IdentityRole("Admin"));
+            }
+            if (!roleCheckManager)
+            {
+                //Create the roles and seed them to the database 
+                roleResultManager = await RoleManager.CreateAsync(new IdentityRole("Manager"));
+            }
+            if (!roleCheckUser)
+            {
+                //Create the roles and seed them to the database 
+                roleResultUser = await RoleManager.CreateAsync(new IdentityRole("User"));
             }
         }
 

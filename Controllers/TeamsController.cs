@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ScruMster.Controllers
 {
-    [Authorize(Roles = "Admin, Manager, User")]
+    [Authorize(Roles = "Admin, Manager")]
     public class TeamsController : Controller
     {
         private readonly ScruMsterContext _context;
@@ -194,12 +194,41 @@ namespace ScruMster.Controllers
         private void PopulateTeamScruMsterUser(Team team)
         {
             var allScruMsterUsers = _context.ScruMsterUsers;
-            var availableUsers = new List<ScruMsterUser>();
+            var allUserRoles = _context.UserRoles;
+            var allRoles = _context.Roles;
+            string adminID = "";
+            string managerID = "";
+            var adminList = new List<ScruMsterUser>();
+            foreach(var role in allRoles)
+            {
+                if (role.Name == "Admin")
+                {
+                    adminID = role.Id;
+                    break;
+                }
+            }
+            foreach (var role in allRoles)
+            {
+                if (role.Name == "Manager")
+                {
+                    managerID = role.Id;
+                    break;
+                }
+            }
+            foreach (var userRole in allUserRoles)
+            {
+                if ((string)userRole.RoleId == adminID || (string)userRole.RoleId == managerID)
+                {
+                    foreach (var user in allScruMsterUsers)
+                        if(user.Id == userRole.UserId)
+                            adminList.Add(user);
+                }
+            }
             var teamScruMsterUsers = new HashSet<string>(team.ScruMsterUsers.Select(c => c.Id));
             var viewModel = new List<ScruMsterUser>();
             foreach (var user in allScruMsterUsers)
             {
-                if (!user.Assigned)
+                if (!user.Assigned && !adminList.Contains(user))
                 {
                     viewModel.Add(new ScruMsterUser
                     {
