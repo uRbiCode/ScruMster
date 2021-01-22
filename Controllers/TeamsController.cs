@@ -82,7 +82,6 @@ namespace ScruMster.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //PopulateTeamScruMsterUser(team);
             return View(team);
         }
 
