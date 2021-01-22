@@ -23,17 +23,20 @@ namespace ScruMster.Areas.Identity.Pages.Account
         private readonly UserManager<ScruMsterUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
             UserManager<ScruMsterUser> userManager,
             SignInManager<ScruMsterUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -55,8 +58,10 @@ namespace ScruMster.Areas.Identity.Pages.Account
             [DataType(DataType.Text)]
             public string LastName { get; set; }
 
-            [Display(Name = "Is boss")]
-            public bool IsBoss { get; set; }
+            [Required]
+            [DataType(DataType.Text)]
+            [Display(Name = "Role")]
+            public string Name { get; set; }
 
             [Required]
             [EmailAddress]
@@ -77,6 +82,7 @@ namespace ScruMster.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+            ViewData["roles"] = _roleManager.Roles.ToList();
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -84,6 +90,7 @@ namespace ScruMster.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
+            var role = _roleManager.FindByIdAsync(Input.Name).Result;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
@@ -91,7 +98,6 @@ namespace ScruMster.Areas.Identity.Pages.Account
                 {
                     FirstName = Input.FirstName,
                     LastName = Input.LastName,
-                    IsBoss = Input.IsBoss,
 
                     UserName = Input.Email,
                     Email = Input.Email
@@ -100,6 +106,7 @@ namespace ScruMster.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+                    await _userManager.AddToRoleAsync(user, role.Name);
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -127,7 +134,7 @@ namespace ScruMster.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
-
+            ViewData["roles"] = _roleManager.Roles.ToList();
             // If we got this far, something failed, redisplay form
             return Page();
         }
