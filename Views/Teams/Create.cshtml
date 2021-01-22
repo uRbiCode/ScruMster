@@ -25,23 +25,23 @@
                         <tr>
                             @{
                                 int cnt = 0;
-                                    foreach (var scruMsterUser in (IEnumerable<ScruMster.Areas.Identity.Data.ScruMsterUser>)ViewBag.TotalUsers)
+                                foreach (var scruMsterUser in (IEnumerable<ScruMster.Areas.Identity.Data.ScruMsterUser>)ViewBag.TotalUsers)
+                                {
+                                    if (cnt++ % 3 == 0)
                                     {
-                                        if (cnt++ % 3 == 0)
-                                        {
-                                        @:</tr><tr>
-                                        }
-                                        @:<td>
-                                            <input type="checkbox"
-                                                   name="selectedScruMsterUsers"
-                                                   value="@scruMsterUser.Id"
-                                                   @(Html.Raw(scruMsterUser.Assigned ? "checked=\"checked\"" : "")) />
-                                             @scruMsterUser.FirstName  @scruMsterUser.LastName
-                                        @:</td>
+                                    @:</tr><tr>
                                     }
+                                    @:<td>
+                                        <input type="checkbox"
+                                               name="selectedScruMsterUsers"
+                                               value="@scruMsterUser.Id"
+                                               @(Html.Raw(scruMsterUser.Assigned ? "checked=\"checked\"" : "")) />
+                                        @scruMsterUser.FirstName @:  @scruMsterUser.LastName
+                                    @:</td>
                                 }
-                            </tr>
-                        </table>     
+                            }
+                        </tr>
+                    </table>     
                     </div>
                 </div>
                 <div class="form-group">

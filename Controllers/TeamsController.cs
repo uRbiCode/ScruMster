@@ -182,6 +182,8 @@ namespace ScruMster.Controllers
                 {
                     Email = user.Email,
                     Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
                     Assigned = teamScruMsterUsers.Contains(user.Id)
                 });
             }
