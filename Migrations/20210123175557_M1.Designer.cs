@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScruMster.Data;
 
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-    partial class ScruMsterContextModelSnapshot : ModelSnapshot
+    [Migration("20210123175557_M1")]
+    partial class M1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,9 +264,7 @@ namespace ScruMster.Migrations
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Sprint", b =>
                 {
                     b.Property<int>("SprintID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("datetime2");

@@ -1,4 +1,8 @@
-﻿using System.Linq;
+
+﻿using System;
+using System.Collections.Generic;
+using System.Dynamic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -48,9 +52,19 @@ namespace ScruMster.Controllers
                 return NotFound();
             }
 
+           // ViewBag.vbComment = _context.Comments.ToList();
+            //ViewBag.vbSprint = _context.Sprints.ToList();
+
+/*        dynamic mymodel = new ExpandoObject();  
+        mymodel.Sprints = await _context.Sprints.Include(s => s.Team)
+                .FirstOrDefaultAsync(m => m.SprintID == id);
+        mymodel.Comments = await _context.Comments
+                .FirstOrDefaultAsync(m => m.SprintId == id);
+*/
             var sprint = await _context.Sprints
                 .Include(s => s.Team)
                 .FirstOrDefaultAsync(m => m.SprintID == id);
+
             if (sprint == null)
             {
                 return NotFound();
@@ -65,6 +79,42 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
+        }
+
+
+
+                // GET: Sprints/Comments/5
+        public async Task<IActionResult> Comments (int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+/*
+            ViewBag.vbComment = _context.Comments.ToList();
+            ViewBag.vbSprint = _context.Sprints.ToList();
+
+                   dynamic mymodel = new ExpandoObject();  
+                    mymodel.Sprints = await _context.Sprints.Include(s => s.Team)
+                            .FirstOrDefaultAsync(m => m.SprintID == id);
+                    mymodel.Comments = await _context.Comments
+                            .FirstOrDefaultAsync(m => m.SprintId == id);*/
+            
+            var sprint = await _context.Sprints
+                .Include(s => s.Team)
+                .FirstOrDefaultAsync(m => m.SprintID == id);
+
+             var comment = await _context.Comments
+                .Include(s => s.Sprint)
+                .FirstOrDefaultAsync(m => m.SprintID == id);
+
+
+            if (sprint == null)
+            {
+                return NotFound();
+            }
+
+            return View(comment);
         }
 
         // GET: Sprints/Create
