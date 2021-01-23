@@ -26,11 +26,23 @@ namespace ScruMster.Controllers
         // GET: Teams
         public async Task<IActionResult> Index()
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (User.IsInRole("Admin"))
+            {
+                return View(await _context.Teams.ToListAsync());
+            }
+            foreach (var user in _context.ScruMsterUsers)
+            {
+                if(user == currentUser)
+                {
+                    return View(await _context.Teams.Where(s => s.TeamID == user.TeamID).ToListAsync());
+                }
+            }
             return View(await _context.Teams.ToListAsync());
         }
 
         // GET: Teams/Details/5
-        [Authorize(Roles = "Admin, Manager")]
+        [Authorize(Roles = "Admin, Manager, User")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)

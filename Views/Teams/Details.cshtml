@@ -1,4 +1,7 @@
 ﻿@model ScruMster.Areas.Identity.Data.Team
+@using Microsoft.AspNetCore.Identity
+@using ScruMster.Areas.Identity.Data
+@inject SignInManager<ScruMsterUser> SignInManager
 
 @{
     ViewData["Title"] = "Details";
@@ -43,6 +46,9 @@
 </table>
 
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.TeamID">Edit</a> |
+    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.TeamID">Edit</a>
+    }
     <a asp-action="Index">Back to List</a>
 </div>
