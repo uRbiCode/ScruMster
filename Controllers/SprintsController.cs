@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -40,12 +41,19 @@ namespace ScruMster.Controllers
                 return NotFound();
             }
 
-            ViewBag.vbComment = _context.Comments.ToList();
-            ViewBag.vbSprint = _context.Sprints.ToList();
+           // ViewBag.vbComment = _context.Comments.ToList();
+            //ViewBag.vbSprint = _context.Sprints.ToList();
 
+/*        dynamic mymodel = new ExpandoObject();  
+        mymodel.Sprints = await _context.Sprints.Include(s => s.Team)
+                .FirstOrDefaultAsync(m => m.SprintID == id);
+        mymodel.Comments = await _context.Comments
+                .FirstOrDefaultAsync(m => m.SprintId == id);
+*/
             var sprint = await _context.Sprints
                 .Include(s => s.Team)
                 .FirstOrDefaultAsync(m => m.SprintID == id);
+
             if (sprint == null)
             {
                 return NotFound();

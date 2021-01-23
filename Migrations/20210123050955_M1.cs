@@ -100,7 +100,7 @@ namespace ScruMster.Migrations
                     Description = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Deadline = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDone = table.Column<bool>(type: "bit", nullable: false),
-                    TeamID = table.Column<int>(type: "int", nullable: false)
+                    TeamID = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -110,7 +110,7 @@ namespace ScruMster.Migrations
                         column: x => x.TeamID,
                         principalTable: "Teams",
                         principalColumn: "TeamID",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -199,7 +199,7 @@ namespace ScruMster.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comment",
+                name: "Comments",
                 columns: table => new
                 {
                     CommentId = table.Column<int>(type: "int", nullable: false)
@@ -211,15 +211,15 @@ namespace ScruMster.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comment", x => x.CommentId);
+                    table.PrimaryKey("PK_Comments", x => x.CommentId);
                     table.ForeignKey(
-                        name: "FK_Comment_AspNetUsers_AuthorId",
+                        name: "FK_Comments_AspNetUsers_AuthorId",
                         column: x => x.AuthorId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Comment_Sprints_SprintId",
+                        name: "FK_Comments_Sprints_SprintId",
                         column: x => x.SprintId,
                         principalTable: "Sprints",
                         principalColumn: "SprintID",
@@ -295,13 +295,13 @@ namespace ScruMster.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comment_AuthorId",
-                table: "Comment",
+                name: "IX_Comments_AuthorId",
+                table: "Comments",
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comment_SprintId",
-                table: "Comment",
+                name: "IX_Comments_SprintId",
+                table: "Comments",
                 column: "SprintId");
 
             migrationBuilder.CreateIndex(
@@ -333,7 +333,7 @@ namespace ScruMster.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Comment");
+                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "ScruMsterUserSprint");

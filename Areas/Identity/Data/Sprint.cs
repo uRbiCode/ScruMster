@@ -26,10 +26,12 @@ namespace ScruMster.Areas.Identity.Data
         public DateTime Deadline { get; set; }
         [Required]
         public bool IsDone { get; set; }
-        [Required]
+        
         public int? TeamID { get; set; }
         public virtual Team Team { get; set; }
         public virtual ICollection<ScruMsterUser> ScruMsterUsers { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
     }
+
+
 }

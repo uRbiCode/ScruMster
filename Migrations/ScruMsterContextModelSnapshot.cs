@@ -177,7 +177,7 @@ namespace ScruMster.Migrations
 
                     b.HasIndex("SprintId");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.ScruMsterUser", b =>
@@ -281,7 +281,6 @@ namespace ScruMster.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("TeamID")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("SprintID");
@@ -407,9 +406,7 @@ namespace ScruMster.Migrations
                 {
                     b.HasOne("ScruMster.Areas.Identity.Data.Team", "Team")
                         .WithMany("Sprints")
-                        .HasForeignKey("TeamID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TeamID");
 
                     b.Navigation("Team");
                 });
