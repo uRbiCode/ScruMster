@@ -22,13 +22,14 @@ namespace ScruMster.Controllers
             return View(roles);
         }
 
-        [Authorize(Roles = "Admin, Manager")]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View(new IdentityRole());
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create(IdentityRole role)
         {
             await roleManager.CreateAsync(role);

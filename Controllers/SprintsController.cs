@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,10 +17,12 @@ namespace ScruMster.Controllers
     public class SprintsController : Controller
     {
         private readonly ScruMsterContext _context;
+        private UserManager<ScruMsterUser> _userManager;
 
-        public SprintsController(ScruMsterContext context)
+        public SprintsController(ScruMsterContext context, UserManager<ScruMsterUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Sprints
@@ -48,9 +52,11 @@ namespace ScruMster.Controllers
         }
 
         // GET: Sprints/Create
+        [Authorize(Roles = "Admin, Manager")]
         public IActionResult Create()
         {
-            ViewData["TeamID"] = new SelectList(_context.Teams, "TeamID", "Name");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ViewData["TeamID"] = new SelectList(_context.Teams.Where(s => s.ownerID == userId), "TeamID", "Name");
             return View();
         }
 
@@ -59,8 +65,9 @@ namespace ScruMster.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
-        {
+        {           
             if (ModelState.IsValid)
             {
                 _context.Add(sprint);

@@ -28,7 +28,7 @@
 
             <div class="form-group">
                 <label asp-for="Input.Name"></label>
-                <select asp-for="Input.Name" class="form-control" asp-items='new SelectList(roles,"Id","Name")'>
+                <select asp-for="Input.Name" class="form-control" asp-items='new SelectList(roles.Where(s => s.Name != "Admin"),"Id","Name")'>
                 </select>
                 <span asp-validation-for="Input.Name" class="text-danger"></span>
             </div>
