@@ -1,3 +1,4 @@
+
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
@@ -29,8 +30,18 @@ namespace ScruMster.Controllers
         // GET: Sprints
         public async Task<IActionResult> Index()
         {
-            var scruMsterContext = _context.Sprints.Include(s => s.Team);
-            return View(await scruMsterContext.ToListAsync());
+            var currentUser = await _userManager.GetUserAsync(User);
+            if(User.IsInRole("User"))
+            {
+                var scruMsterContext = _context.Sprints.Include(s => s.Team).Where(s => s.TeamID == currentUser.TeamID);
+                return View(await scruMsterContext.ToListAsync());
+            }
+            else
+            {
+                var scruMsterContext = _context.Sprints.Include(s => s.Team);
+                return View(await scruMsterContext.ToListAsync());
+            }
+            
         }
 
         // GET: Sprints/Details/5
@@ -59,7 +70,15 @@ namespace ScruMster.Controllers
                 return NotFound();
             }
 
-            return View(sprint);
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser.TeamID == sprint.TeamID || User.IsInRole("Admin") || User.IsInRole("Manager"))
+            {
+                return View(sprint);
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
 
@@ -114,20 +133,25 @@ namespace ScruMster.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
-        {           
+        {
+            var owner = await _userManager.GetUserAsync(User);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
+                sprint.TeamID = owner.TeamID;
                 _context.Add(sprint);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamID"] = new SelectList(_context.Teams, "TeamID", "Name", sprint.TeamID);
+            ViewData["TeamID"] = new SelectList(_context.Teams.Where(s => s.ownerID == userId), "TeamID", "Name");
             return View(sprint);
         }
 
         // GET: Sprints/Edit/5
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Edit(int? id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null)
             {
                 return NotFound();
@@ -138,7 +162,7 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
-            ViewData["TeamID"] = new SelectList(_context.Teams, "TeamID", "Name", sprint.TeamID);
+            ViewData["TeamID"] = new SelectList(_context.Teams.Where(s => s.ownerID == userId), "TeamID", "Name");
             return View(sprint);
         }
 
@@ -147,8 +171,10 @@ namespace ScruMster.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Edit(int id, [Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id != sprint.SprintID)
             {
                 return NotFound();
@@ -174,11 +200,12 @@ namespace ScruMster.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamID"] = new SelectList(_context.Teams, "TeamID", "Name", sprint.TeamID);
+            ViewData["TeamID"] = new SelectList(_context.Teams.Where(s => s.ownerID == userId), "TeamID", "Name"); ;
             return View(sprint);
         }
 
         // GET: Sprints/Delete/5
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -200,6 +227,7 @@ namespace ScruMster.Controllers
         // POST: Sprints/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var sprint = await _context.Sprints.FindAsync(id);

@@ -81,7 +81,6 @@ namespace ScruMster
         {
             // Initializing custom roles   
             var RoleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var UserManager = serviceProvider.GetRequiredService<UserManager<ScruMsterUser>>();
 
             IdentityResult roleResultAdmin;
             IdentityResult roleResultManager;
@@ -108,6 +107,15 @@ namespace ScruMster
             }
         }
 
+        private async Task CreateAdminAccount(IServiceProvider serviceProvider)
+        {
+            var UserManager = serviceProvider.GetRequiredService<UserManager<ScruMsterUser>>();
+            //Create and add admin user
+
+            var adminUser = await UserManager.FindByIdAsync("AdminID");
+            await UserManager.AddToRoleAsync(adminUser, "Admin");
+        }        
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
         {
@@ -131,6 +139,7 @@ namespace ScruMster
             app.UseAuthorization();
 
             CreateUserRoles(services).Wait();
+            CreateAdminAccount(services).Wait();
 
             app.UseEndpoints(endpoints =>
             {

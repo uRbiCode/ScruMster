@@ -10,7 +10,6 @@ namespace ScruMster.Areas.Identity.Data
         /// <summary>
         /// DODANO
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Display(Name = "Number")]
         public int SprintID { get; set; }
         [Required]
@@ -26,12 +25,9 @@ namespace ScruMster.Areas.Identity.Data
         public DateTime Deadline { get; set; }
         [Required]
         public bool IsDone { get; set; }
-        
         public int? TeamID { get; set; }
         public virtual Team Team { get; set; }
         public virtual ICollection<ScruMsterUser> ScruMsterUsers { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
     }
-
-
 }

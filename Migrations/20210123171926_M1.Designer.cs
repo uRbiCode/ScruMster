@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScruMster.Data;
 
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-    partial class ScruMsterContextModelSnapshot : ModelSnapshot
+    [Migration("20210123171926_M1")]
+    partial class M1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -148,36 +150,6 @@ namespace ScruMster.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("ScruMster.Areas.Identity.Data.Comment", b =>
-                {
-                    b.Property<int>("CommentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .UseIdentityColumn();
-
-                    b.Property<DateTime>("AddTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("SprintID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
-
-                    b.HasKey("CommentId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.HasIndex("SprintID");
-
-                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.ScruMsterUser", b =>
@@ -378,23 +350,6 @@ namespace ScruMster.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ScruMster.Areas.Identity.Data.Comment", b =>
-                {
-                    b.HasOne("ScruMster.Areas.Identity.Data.ScruMsterUser", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId");
-
-                    b.HasOne("ScruMster.Areas.Identity.Data.Sprint", "Sprint")
-                        .WithMany("Comments")
-                        .HasForeignKey("SprintID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Author");
-
-                    b.Navigation("Sprint");
-                });
-
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.ScruMsterUser", b =>
                 {
                     b.HasOne("ScruMster.Areas.Identity.Data.Team", "Team")
@@ -426,11 +381,6 @@ namespace ScruMster.Migrations
                         .HasForeignKey("SprintsSprintID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("ScruMster.Areas.Identity.Data.Sprint", b =>
-                {
-                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Team", b =>
