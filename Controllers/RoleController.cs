@@ -21,7 +21,6 @@ namespace ScruMster.Controllers
             var roles = roleManager.Roles.ToList();
             return View(roles);
         }
-
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {

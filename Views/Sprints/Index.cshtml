@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<ScruMster.Areas.Identity.Data.Sprint>
+@using Microsoft.AspNetCore.Identity
+@using ScruMster.Areas.Identity.Data
+@inject SignInManager<ScruMsterUser> SignInManager
 
 @{
     ViewData["Title"] = "Index";
@@ -6,9 +9,12 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -31,29 +37,30 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Deadline)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Team.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.SprintID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.SprintID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.SprintID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Deadline)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsDone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Team.Name)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.SprintID">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.SprintID">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.SprintID">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

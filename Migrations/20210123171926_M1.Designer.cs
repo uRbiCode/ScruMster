@@ -10,7 +10,7 @@ using ScruMster.Data;
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-    [Migration("20210123134222_M1")]
+    [Migration("20210123171926_M1")]
     partial class M1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -234,7 +234,9 @@ namespace ScruMster.Migrations
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Sprint", b =>
                 {
                     b.Property<int>("SprintID")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("datetime2");

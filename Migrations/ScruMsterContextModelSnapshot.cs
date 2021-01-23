@@ -232,7 +232,9 @@ namespace ScruMster.Migrations
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Sprint", b =>
                 {
                     b.Property<int>("SprintID")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
 
                     b.Property<DateTime>("Deadline")
                         .HasColumnType("datetime2");

@@ -1,20 +1,16 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
 using System.Collections.Generic;
-using System.Security.Claims;
-using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 
 namespace ScruMster.Controllers
 {
-    [Authorize(Roles = "Admin, Manager")]
+    [Authorize(Roles = "Admin, Manager, User")]
     public class TeamsController : Controller
     {
         private readonly ScruMsterContext _context;
@@ -26,6 +22,7 @@ namespace ScruMster.Controllers
             _userManager = userManager;
         }
 
+        
         // GET: Teams
         public async Task<IActionResult> Index()
         {
@@ -33,6 +30,7 @@ namespace ScruMster.Controllers
         }
 
         // GET: Teams/Details/5
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -51,6 +49,7 @@ namespace ScruMster.Controllers
         }
 
         // GET: Teams/Create
+        [Authorize(Roles = "Admin, Manager")]
         public IActionResult Create()
         {
             var team = new Team();
@@ -64,6 +63,7 @@ namespace ScruMster.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("TeamID,Name")] Team team, string[] selectedScruMsterUsers)
         {
             if (selectedScruMsterUsers != null)
@@ -72,6 +72,7 @@ namespace ScruMster.Controllers
                 team.ownerID = owner.Id;
                 team.owner = owner;
                 team.ScruMsterUsers = new List<ScruMsterUser>();
+                team.ScruMsterUsers.Add(owner); // owner restricted to 1 team
                 foreach (var user in selectedScruMsterUsers)
                 {
                     var userToAdd = _context.ScruMsterUsers.Find(user);
@@ -80,6 +81,7 @@ namespace ScruMster.Controllers
                 foreach (var teammember in team.ScruMsterUsers)
                 {
                     teammember.Assigned = true;
+                    teammember.Team = team;
                 }
             }
             if (ModelState.IsValid)
@@ -92,6 +94,7 @@ namespace ScruMster.Controllers
         }
 
         // GET: Teams/Edit/5
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -104,6 +107,11 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
+
+            ///
+            PopulateTeamScruMsterUserForEdit(team);
+            ///
+
             return View(team);
         }
 
@@ -112,7 +120,8 @@ namespace ScruMster.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("TeamID,Name")] Team team)
+        [Authorize(Roles = "Admin, Manager")]
+        public async Task<IActionResult> Edit(int id, [Bind("TeamID,Name")] Team team, string[] selectedScruMsterUsers)
         {
             if (id != team.TeamID)
             {
@@ -123,6 +132,7 @@ namespace ScruMster.Controllers
             {
                 try
                 {
+                    
                     _context.Update(team);
                     await _context.SaveChangesAsync();
                 }
@@ -143,6 +153,7 @@ namespace ScruMster.Controllers
         }
 
         // GET: Teams/Delete/5
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -156,13 +167,16 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
-
+            var viewModel = new List<ScruMsterUser>();
+            
+            ViewBag.TotalUsers = viewModel;
             return View(team);
         }
 
         // POST: Teams/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var team = await _context.Teams.FindAsync(id);
@@ -176,6 +190,7 @@ namespace ScruMster.Controllers
                     {
                         user.TeamID = null;
                         user.Assigned = false;
+                        user.Team = null;
                     }                     
                 }
             }
@@ -240,6 +255,59 @@ namespace ScruMster.Controllers
                     });
                 }
                     
+            }
+            ViewBag.TotalUsers = viewModel;
+        }
+
+        private void PopulateTeamScruMsterUserForEdit(Team team)
+        {
+            var allScruMsterUsers = _context.ScruMsterUsers;
+            var allUserRoles = _context.UserRoles;
+            var allRoles = _context.Roles;
+            string adminID = "";
+            string managerID = "";
+            var adminList = new List<ScruMsterUser>();
+            foreach (var role in allRoles)
+            {
+                if (role.Name == "Admin")
+                {
+                    adminID = role.Id;
+                    break;
+                }
+            }
+            foreach (var role in allRoles)
+            {
+                if (role.Name == "Manager")
+                {
+                    managerID = role.Id;
+                    break;
+                }
+            }
+            foreach (var userRole in allUserRoles)
+            {
+                if ((string)userRole.RoleId == adminID || (string)userRole.RoleId == managerID)
+                {
+                    foreach (var user in allScruMsterUsers)
+                        if (user.Id == userRole.UserId)
+                            adminList.Add(user);
+                }
+            }
+            var teamScruMsterUsers = new HashSet<string>(team.ScruMsterUsers.Select(c => c.Id));
+            var viewModel = new List<ScruMsterUser>();
+            foreach (var user in allScruMsterUsers)
+            {
+                if (!adminList.Contains(user))
+                {
+                    viewModel.Add(new ScruMsterUser
+                    {
+                        Id = user.Id,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        TeamID = user.TeamID,
+                        Assigned = teamScruMsterUsers.Contains(user.Id)
+                    });
+                }
+
             }
             ViewBag.TotalUsers = viewModel;
         }

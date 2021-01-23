@@ -10,7 +10,6 @@ namespace ScruMster.Areas.Identity.Data
         /// <summary>
         /// DODANO
         /// </summary>
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Display(Name = "Number")]
         public int SprintID { get; set; }
         [Required]
