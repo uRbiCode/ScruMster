@@ -163,7 +163,7 @@ namespace ScruMster.Migrations
                     b.Property<string>("AuthorId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("SprintId")
+                    b.Property<int>("SprintID")
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
@@ -175,7 +175,7 @@ namespace ScruMster.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("SprintId");
+                    b.HasIndex("SprintID");
 
                     b.ToTable("Comments");
                 });
@@ -384,7 +384,7 @@ namespace ScruMster.Migrations
 
                     b.HasOne("ScruMster.Areas.Identity.Data.Sprint", "Sprint")
                         .WithMany("Comments")
-                        .HasForeignKey("SprintId")
+                        .HasForeignKey("SprintID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

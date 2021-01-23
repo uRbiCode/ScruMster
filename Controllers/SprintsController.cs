@@ -87,7 +87,7 @@ namespace ScruMster.Controllers
 
              var comment = await _context.Comments
                 .Include(s => s.Sprint)
-                .FirstOrDefaultAsync(m => m.SprintId == id);
+                .FirstOrDefaultAsync(m => m.SprintID == id);
 
 
             if (sprint == null)

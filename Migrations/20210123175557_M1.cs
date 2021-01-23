@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ScruMster.Migrations
 {
-    public partial class m1 : Migration
+    public partial class M1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -206,7 +206,7 @@ namespace ScruMster.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AddTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    SprintId = table.Column<int>(type: "int", nullable: false),
+                    SprintID = table.Column<int>(type: "int", nullable: false),
                     AuthorId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -219,8 +219,8 @@ namespace ScruMster.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Comments_Sprints_SprintId",
-                        column: x => x.SprintId,
+                        name: "FK_Comments_Sprints_SprintID",
+                        column: x => x.SprintID,
                         principalTable: "Sprints",
                         principalColumn: "SprintID",
                         onDelete: ReferentialAction.Cascade);
@@ -300,9 +300,9 @@ namespace ScruMster.Migrations
                 column: "AuthorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_SprintId",
+                name: "IX_Comments_SprintID",
                 table: "Comments",
-                column: "SprintId");
+                column: "SprintID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ScruMsterUserSprint_SprintsSprintID",

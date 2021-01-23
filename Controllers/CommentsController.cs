@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace ScruMster.Controllers
 {
@@ -14,6 +16,7 @@ namespace ScruMster.Controllers
     {
         private readonly ScruMsterContext _context;
         private UserManager<ScruMsterUser> _userManager;
+
         public CommentsController(ScruMsterContext context, UserManager<ScruMsterUser> userManager)
         {
             _context = context;
@@ -42,7 +45,6 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
-            //comment.Author = await _userManager.GetUserAsync(User);
 
             return View(comment);
         }
@@ -50,7 +52,7 @@ namespace ScruMster.Controllers
         // GET: Comments/Create
         public IActionResult Create()
         {
-            ViewData["SprintId"] = new SelectList(_context.Sprints, "SprintID", "Description");
+            ViewData["SprintID"] = new SelectList(_context.Sprints, "SprintID", "SprintID");
             return View();
         }
 
@@ -59,9 +61,9 @@ namespace ScruMster.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CommentId,AddTime,Text,SprintId")] Comment comment)
+        public async Task<IActionResult> Create([Bind("CommentId,AddTime,Text,SprintID")] Comment comment)
         {
-            comment.Author.Id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+           comment.Author = await _userManager.GetUserAsync(User);
 
             if (ModelState.IsValid)
             {
@@ -69,7 +71,7 @@ namespace ScruMster.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SprintId"] = new SelectList(_context.Sprints, "SprintID", "Description", comment.SprintId);
+            ViewData["SprintID"] = new SelectList(_context.Sprints, "SprintID", "Description", comment.SprintID);
             return View(comment);
         }
 
@@ -86,7 +88,7 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
-            ViewData["SprintId"] = new SelectList(_context.Sprints, "SprintID", "Description", comment.SprintId);
+            ViewData["SprintID"] = new SelectList(_context.Sprints, "SprintID", "Description", comment.SprintID);
             return View(comment);
         }
 
@@ -95,7 +97,7 @@ namespace ScruMster.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CommentId,AddTime,Text,SprintId")] Comment comment)
+        public async Task<IActionResult> Edit(int id, [Bind("CommentId,AddTime,Text,SprintID")] Comment comment)
         {
             if (id != comment.CommentId)
             {
@@ -122,7 +124,7 @@ namespace ScruMster.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SprintId"] = new SelectList(_context.Sprints, "SprintID", "Description", comment.SprintId);
+            ViewData["SprintID"] = new SelectList(_context.Sprints, "SprintID", "Description", comment.SprintID);
             return View(comment);
         }
 

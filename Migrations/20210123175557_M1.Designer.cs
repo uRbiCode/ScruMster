@@ -10,8 +10,8 @@ using ScruMster.Data;
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-    [Migration("20210123154328_m1")]
-    partial class m1
+    [Migration("20210123175557_M1")]
+    partial class M1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -165,7 +165,7 @@ namespace ScruMster.Migrations
                     b.Property<string>("AuthorId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("SprintId")
+                    b.Property<int>("SprintID")
                         .HasColumnType("int");
 
                     b.Property<string>("Text")
@@ -177,7 +177,7 @@ namespace ScruMster.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.HasIndex("SprintId");
+                    b.HasIndex("SprintID");
 
                     b.ToTable("Comments");
                 });
@@ -386,7 +386,7 @@ namespace ScruMster.Migrations
 
                     b.HasOne("ScruMster.Areas.Identity.Data.Sprint", "Sprint")
                         .WithMany("Comments")
-                        .HasForeignKey("SprintId")
+                        .HasForeignKey("SprintID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

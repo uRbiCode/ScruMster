@@ -16,9 +16,17 @@ namespace ScruMster.Areas.Identity.Data
         [StringLength(250, ErrorMessage = "Comment cannot be longer than 250 characters.")]
         public string Text { get; set; }
 
-        public int SprintId { get; set; }
+        public int SprintID { get; set; }
         public virtual Sprint Sprint { get; set; }
 
+      //  public int AuthorId { get; set; }
         public virtual ScruMsterUser Author { get; set; }
+
+        public Comment()
+        {
+            AddTime = DateTime.Now;
+           
+
+        }
     }
 }
