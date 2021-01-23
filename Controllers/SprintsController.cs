@@ -1,6 +1,3 @@
-﻿using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +5,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace ScruMster.Controllers
 {
@@ -27,7 +28,7 @@ namespace ScruMster.Controllers
         public async Task<IActionResult> Index()
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            if(User.IsInRole("User"))
+            if (User.IsInRole("User"))
             {
                 var scruMsterContext = _context.Sprints.Include(s => s.Team).Where(s => s.TeamID == currentUser.TeamID);
                 return View(await scruMsterContext.ToListAsync());
@@ -37,7 +38,7 @@ namespace ScruMster.Controllers
                 var scruMsterContext = _context.Sprints.Include(s => s.Team);
                 return View(await scruMsterContext.ToListAsync());
             }
-            
+
         }
 
         // GET: Sprints/Details/5
@@ -48,13 +49,40 @@ namespace ScruMster.Controllers
                 return NotFound();
             }
 
+            // ViewBag.vbComment = _context.Comments.ToList();
+            //ViewBag.vbSprint = _context.Sprints.ToList();
+
+            /*        dynamic mymodel = new ExpandoObject();  
+                    mymodel.Sprints = await _context.Sprints.Include(s => s.Team)
+                            .FirstOrDefaultAsync(m => m.SprintID == id);
+                    mymodel.Comments = await _context.Comments
+                            .FirstOrDefaultAsync(m => m.SprintId == id);
+            */
             var sprint = await _context.Sprints
                 .Include(s => s.Team)
                 .FirstOrDefaultAsync(m => m.SprintID == id);
+
             if (sprint == null)
             {
                 return NotFound();
             }
+
+            // DODANO
+            ViewBag.allComments = _context.Comments.Where(m => m.SprintID == id);
+            var allAuthors = new List<ScruMsterUser>();
+            foreach (var comment in _context.Comments.Where(m => m.SprintID == id))
+            {
+                foreach (var user in _context.ScruMsterUsers)
+                {
+                    if (user.Id == comment.ScruMsterUserId)
+                    {
+                        allAuthors.Add(user);
+                    }
+                }
+
+            }
+            ViewBag.allAuthors = allAuthors;
+
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser.TeamID == sprint.TeamID || User.IsInRole("Admin") || User.IsInRole("Manager"))
@@ -65,6 +93,43 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
+
+        }
+
+
+
+        // GET: Sprints/Comments/5
+        public async Task<IActionResult> Comments(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            /*
+                        ViewBag.vbComment = _context.Comments.ToList();
+                        ViewBag.vbSprint = _context.Sprints.ToList();
+
+                               dynamic mymodel = new ExpandoObject();  
+                                mymodel.Sprints = await _context.Sprints.Include(s => s.Team)
+                                        .FirstOrDefaultAsync(m => m.SprintID == id);
+                                mymodel.Comments = await _context.Comments
+                                        .FirstOrDefaultAsync(m => m.SprintId == id);*/
+
+            var sprint = await _context.Sprints
+                .Include(s => s.Team)
+                .FirstOrDefaultAsync(m => m.SprintID == id);
+
+            var comment = await _context.Comments
+               .Include(s => s.Sprint)
+               .FirstOrDefaultAsync(m => m.SprintID == id);
+
+
+            if (sprint == null)
+            {
+                return NotFound();
+            }
+
+            return View(comment);
         }
 
         // GET: Sprints/Create
