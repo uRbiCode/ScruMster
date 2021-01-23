@@ -150,6 +150,36 @@ namespace ScruMster.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("ScruMster.Areas.Identity.Data.Comment", b =>
+                {
+                    b.Property<int>("CommentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<DateTime>("AddTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("SprintId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.HasKey("CommentId");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("SprintId");
+
+                    b.ToTable("Comment");
+                });
+
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.ScruMsterUser", b =>
                 {
                     b.Property<string>("Id")
@@ -251,6 +281,7 @@ namespace ScruMster.Migrations
                         .HasColumnType("nvarchar(50)");
 
                     b.Property<int?>("TeamID")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("SprintID");
@@ -346,6 +377,23 @@ namespace ScruMster.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ScruMster.Areas.Identity.Data.Comment", b =>
+                {
+                    b.HasOne("ScruMster.Areas.Identity.Data.ScruMsterUser", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("ScruMster.Areas.Identity.Data.Sprint", "Sprint")
+                        .WithMany("Comments")
+                        .HasForeignKey("SprintId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Sprint");
+                });
+
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.ScruMsterUser", b =>
                 {
                     b.HasOne("ScruMster.Areas.Identity.Data.Team", "Team")
@@ -359,7 +407,9 @@ namespace ScruMster.Migrations
                 {
                     b.HasOne("ScruMster.Areas.Identity.Data.Team", "Team")
                         .WithMany("Sprints")
-                        .HasForeignKey("TeamID");
+                        .HasForeignKey("TeamID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Team");
                 });
@@ -377,6 +427,11 @@ namespace ScruMster.Migrations
                         .HasForeignKey("SprintsSprintID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ScruMster.Areas.Identity.Data.Sprint", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Team", b =>

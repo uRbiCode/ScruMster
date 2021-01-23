@@ -40,6 +40,9 @@ namespace ScruMster.Controllers
                 return NotFound();
             }
 
+            ViewBag.vbComment = _context.Comments.ToList();
+            ViewBag.vbSprint = _context.Sprints.ToList();
+
             var sprint = await _context.Sprints
                 .Include(s => s.Team)
                 .FirstOrDefaultAsync(m => m.SprintID == id);

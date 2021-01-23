@@ -21,5 +21,6 @@ namespace ScruMster.Data
         public DbSet<ScruMsterUser> ScruMsterUsers { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<Sprint> Sprints { get; set; }
+        public DbSet<Comment> Comments { get; set; }
     }
 }
