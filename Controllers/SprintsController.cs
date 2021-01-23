@@ -67,20 +67,22 @@ namespace ScruMster.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
-        {           
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {
                 _context.Add(sprint);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamID"] = new SelectList(_context.Teams, "TeamID", "Name", sprint.TeamID);
+            ViewData["TeamID"] = new SelectList(_context.Teams.Where(s => s.ownerID == userId), "TeamID", "Name");
             return View(sprint);
         }
 
         // GET: Sprints/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id == null)
             {
                 return NotFound();
@@ -91,7 +93,7 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
-            ViewData["TeamID"] = new SelectList(_context.Teams, "TeamID", "Name", sprint.TeamID);
+            ViewData["TeamID"] = new SelectList(_context.Teams.Where(s => s.ownerID == userId), "TeamID", "Name");
             return View(sprint);
         }
 
@@ -102,6 +104,7 @@ namespace ScruMster.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id != sprint.SprintID)
             {
                 return NotFound();
@@ -127,7 +130,7 @@ namespace ScruMster.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TeamID"] = new SelectList(_context.Teams, "TeamID", "Name", sprint.TeamID);
+            ViewData["TeamID"] = new SelectList(_context.Teams.Where(s => s.ownerID == userId), "TeamID", "Name"); ;
             return View(sprint);
         }
 
