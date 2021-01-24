@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-
 namespace ScruMster.Controllers
 {
     public class CommentsController : Controller
@@ -24,6 +24,27 @@ namespace ScruMster.Controllers
         // GET: Comments
         public async Task<IActionResult> Index()
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            var Comments = new List<Comment>();
+            //var team = _context.Teams.FirstOrDefault(s => s.TeamID == currentUser.TeamID);
+            foreach (var team in _context.Teams)
+            {
+                if (currentUser.TeamID == team.TeamID)
+                {
+                    foreach (var sprint in _context.Sprints)
+                    {
+                        if (sprint.TeamID == team.TeamID)
+                        {
+                            foreach (var comment in _context.Comments)
+                            {
+                                Comments.Add(comment);
+                            }
+                        }
+                    }
+                }
+
+            }/////////////////////////
+            ViewBag.comments = Comments;
             var scruMsterContext = _context.Comments.Include(c => c.Sprint);
             return View(await scruMsterContext.ToListAsync());
         }
@@ -59,7 +80,7 @@ namespace ScruMster.Controllers
                     user = item;
                 }
             }
-            ViewData["SprintID"] = new SelectList(_context.Sprints.Where(s => s.TeamID == user.TeamID), "SprintID", "SprintID");
+            ViewData["SprintID"] = new SelectList(_context.Sprints.Where(s => s.TeamID == user.TeamID), "SprintID", "Name");
             return View();
         }
 
@@ -101,63 +122,9 @@ namespace ScruMster.Controllers
                     s.Comments.Add(comment);
                 }
             }
-            ViewData["SprintID"] = new SelectList(_context.Sprints.Where(s => s.TeamID == currentUser.TeamID), "SprintID", "Description", comment.SprintID);
+            ViewData["SprintID"] = new SelectList(_context.Sprints.Where(s => s.TeamID == currentUser.TeamID), "SprintID", "Name", comment.SprintID);
             return View(comment);
         }
-
-        // GET: Comments/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var comment = await _context.Comments.FindAsync(id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-            ViewData["SprintID"] = new SelectList(_context.Sprints, "SprintID", "Description", comment.SprintID);
-            return View(comment);
-        }
-
-        // POST: Comments/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CommentId,AddTime,Text,SprintID")] Comment comment)
-        {
-            if (id != comment.CommentId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(comment);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CommentExists(comment.CommentId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["SprintID"] = new SelectList(_context.Sprints, "SprintID", "Description", comment.SprintID);
-            return View(comment);
-        }
-
         // GET: Comments/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {

@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -26,10 +25,7 @@ namespace ScruMster.Controllers
         }
 
         // GET: Sprints
-        public async Task<IActionResult> Index(string sortOrder,
-    string currentFilter,
-    string searchString,
-    int? pageNumber)
+        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -112,20 +108,7 @@ namespace ScruMster.Controllers
 
             // DODANO
             ViewBag.allComments = _context.Comments.Where(m => m.SprintID == id);
-            var allAuthors = new List<ScruMsterUser>();
-            foreach (var comment in _context.Comments.Where(m => m.SprintID == id))
-            {
-                foreach (var user in _context.ScruMsterUsers)
-                {
-                    if (user.Id == comment.ScruMsterUserId)
-                    {
-                        allAuthors.Add(user);
-                    }
-                }
-
-            }
-            ViewBag.allAuthors = allAuthors;
-
+            ViewBag.allUsers = _context.ScruMsterUsers;
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser.TeamID == sprint.TeamID || User.IsInRole("Admin") || User.IsInRole("Manager"))
@@ -158,6 +141,13 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
         {
+            /*            foreach (var item in _context.Sprints)
+                        {
+                            if (sprint.Name == item.Name)
+                            {
+                                throw new Exception("Sprint with that name already exist!");
+                            }
+                        }*/
             var owner = await _userManager.GetUserAsync(User);
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
@@ -198,6 +188,12 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Edit(int id, [Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (!User.IsInRole("Admin"))
+            {
+                sprint.TeamID = currentUser.TeamID;
+            }
+
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id != sprint.SprintID)
             {
