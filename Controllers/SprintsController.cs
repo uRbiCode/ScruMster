@@ -66,20 +66,21 @@ namespace ScruMster.Controllers
                     sprints = sprints.OrderBy(s => s.Name);
                     break;
             }
-            int pageSize = 3;
-            //return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize));
+
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (User.IsInRole("User"))
             {
                 sprints = sprints.Include(s => s.Team).Where(s => s.TeamID == currentUser.TeamID);
-                return View(await sprints.AsNoTracking().ToListAsync());
+                //return View(await sprints.AsNoTracking().ToListAsync());
             }
             else
             {
                 sprints = sprints.Include(s => s.Team);
-                return View(await sprints.AsNoTracking().ToListAsync());
+                //return View(await sprints.AsNoTracking().ToListAsync());
             }
+            int pageSize = 5;
+            return View(await PaginatedList<Sprint>.CreateAsync(sprints.AsNoTracking(), pageNumber ?? 1, pageSize));
 
         }
 
