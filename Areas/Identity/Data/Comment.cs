@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ScruMster.Areas.Identity.Data
 {
@@ -19,13 +20,14 @@ namespace ScruMster.Areas.Identity.Data
         public int SprintID { get; set; }
         public virtual Sprint Sprint { get; set; }
 
-      //  public int AuthorId { get; set; }
+        public string ScruMsterUserId { get; set; }
+        [NotMapped]
         public virtual ScruMsterUser Author { get; set; }
 
         public Comment()
         {
             AddTime = DateTime.Now;
-           
+
 
         }
     }
