@@ -69,7 +69,7 @@ namespace ScruMster.Controllers
             }
             ViewBag.teamLeader = _context.ScruMsterUsers.FirstOrDefault(m => m.Id == _context.Teams.FirstOrDefault(m => m.TeamID == id).ownerID);
             ViewBag.teamUsers = _context.ScruMsterUsers.Where(m => m.TeamID == id);
-            if(currentUser.TeamID != id) return RedirectToAction("Index", "Home"); //
+            if ((currentUser.TeamID != id || currentUser.TeamID == null) && currentUser.Id != "AdminID") throw new Exception("You can't access other teams data!");
             return View(team);
         }
 
@@ -79,10 +79,9 @@ namespace ScruMster.Controllers
         {
             var currentUser = _userManager.GetUserId(User);
             foreach(var ifTeam in _context.Teams)
-                if (ifTeam.ownerID == currentUser)
-                {                   
-                    ViewBag.MyErrorMessage = false;
-                    return RedirectToAction("Index", "Home");
+                if (ifTeam.ownerID == currentUser && currentUser != "AdminID")
+                {
+                    throw new Exception("You already own a team!");
                 }
             var team = new Team();
             team.ScruMsterUsers = new List<ScruMsterUser>();
@@ -98,6 +97,8 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("TeamID,Name")] Team team, string[] selectedScruMsterUsers)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser.Id == "AdminID") throw new Exception("Section under development");
             if (selectedScruMsterUsers != null)
             {
                 var owner = await _userManager.GetUserAsync(User);
@@ -129,6 +130,8 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Edit(int? id)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if ((currentUser.TeamID != id || currentUser.TeamID == null) && currentUser.Id != "AdminID") throw new Exception("You can't edit other teams data!");
             if (id == null)
             {
                 return NotFound();
@@ -152,6 +155,9 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Edit(int id, [Bind("TeamID,Name")] Team team, string[] selectedScruMsterUsers)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser.Id == "AdminID") throw new Exception("Section under development");
+            if (currentUser.TeamID != id || currentUser.TeamID == null) throw new Exception("You can't edit other teams data!");          
             if (id != team.TeamID)
             {
                 return NotFound();
@@ -213,6 +219,8 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Delete(int? id)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if ((currentUser.TeamID != id || currentUser.TeamID == null) && currentUser.Id != "AdminID") throw new Exception("You can't delete other teams!");
             if (id == null)
             {
                 return NotFound();
@@ -236,6 +244,8 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
+            if ((currentUser.TeamID != id || currentUser.TeamID == null) && currentUser.Id != "AdminID") throw new Exception("You can't delete other teams!");
             var team = await _context.Teams.FindAsync(id);
             if (team != null)
             {
