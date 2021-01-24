@@ -10,11 +10,7 @@ using ScruMster.Data;
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-<<<<<<< HEAD:Migrations/20210123202822_M1.Designer.cs
-    [Migration("20210123202822_M1")]
-=======
-    [Migration("20210124010607_M1")]
->>>>>>> bootstrap_to_merge:Migrations/20210124010607_M1.Designer.cs
+    [Migration("20210124140442_M1")]
     partial class M1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
