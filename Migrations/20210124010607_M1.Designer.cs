@@ -10,7 +10,7 @@ using ScruMster.Data;
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-    [Migration("20210123204355_M1")]
+    [Migration("20210124010607_M1")]
     partial class M1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -162,8 +162,8 @@ namespace ScruMster.Migrations
                     b.Property<DateTime>("AddTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("ScruMsterUserId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SprintID")
                         .HasColumnType("int");
@@ -174,8 +174,6 @@ namespace ScruMster.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.HasKey("CommentId");
-
-                    b.HasIndex("AuthorId");
 
                     b.HasIndex("SprintID");
 
@@ -382,17 +380,11 @@ namespace ScruMster.Migrations
 
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Comment", b =>
                 {
-                    b.HasOne("ScruMster.Areas.Identity.Data.ScruMsterUser", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId");
-
                     b.HasOne("ScruMster.Areas.Identity.Data.Sprint", "Sprint")
                         .WithMany("Comments")
                         .HasForeignKey("SprintID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Author");
 
                     b.Navigation("Sprint");
                 });

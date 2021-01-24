@@ -3,17 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ScruMster.Data;
 
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-    [Migration("20210123202822_M1")]
-    partial class M1
+    partial class ScruMsterContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -162,8 +160,8 @@ namespace ScruMster.Migrations
                     b.Property<DateTime>("AddTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("ScruMsterUserId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SprintID")
                         .HasColumnType("int");
@@ -174,8 +172,6 @@ namespace ScruMster.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.HasKey("CommentId");
-
-                    b.HasIndex("AuthorId");
 
                     b.HasIndex("SprintID");
 
@@ -382,17 +378,11 @@ namespace ScruMster.Migrations
 
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Comment", b =>
                 {
-                    b.HasOne("ScruMster.Areas.Identity.Data.ScruMsterUser", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId");
-
                     b.HasOne("ScruMster.Areas.Identity.Data.Sprint", "Sprint")
                         .WithMany("Comments")
                         .HasForeignKey("SprintID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Author");
 
                     b.Navigation("Sprint");
                 });
