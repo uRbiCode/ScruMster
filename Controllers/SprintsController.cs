@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -97,16 +98,6 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
-
-            // ViewBag.vbComment = _context.Comments.ToList();
-            //ViewBag.vbSprint = _context.Sprints.ToList();
-
-            /*        dynamic mymodel = new ExpandoObject();  
-                    mymodel.Sprints = await _context.Sprints.Include(s => s.Team)
-                            .FirstOrDefaultAsync(m => m.SprintID == id);
-                    mymodel.Comments = await _context.Comments
-                            .FirstOrDefaultAsync(m => m.SprintId == id);
-            */
             var sprint = await _context.Sprints
                 .Include(s => s.Team)
                 .FirstOrDefaultAsync(m => m.SprintID == id);
@@ -141,9 +132,6 @@ namespace ScruMster.Controllers
             }
 
         }
-
-
-
         // GET: Sprints/Create
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult Create()
@@ -212,14 +200,11 @@ namespace ScruMster.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            foreach (var sprintCheck in _context.Sprints)
-            {
-                if (sprintCheck.SprintID == id)
-                {
-                    if ((currentUser.TeamID != sprintCheck.TeamID || currentUser.TeamID == null) && currentUser.Id != "AdminID") throw new Exception("You can't access other teams sprints!");
-                }
-            }
             if (currentUser.Id == "AdminID") throw new Exception("Section under development");
+            if (!User.IsInRole("Admin"))
+            {
+                sprint.TeamID = currentUser.TeamID;
+            }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id != sprint.SprintID)
             {
