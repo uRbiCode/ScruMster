@@ -5,7 +5,7 @@
 
 <br />
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Team";
 }
 
 <h1>Index</h1>
@@ -16,9 +16,9 @@
     <button type="button" class="btn btn-outline-primary btn-sm">
         <a class=" nav-link text-primary" asp-action="Create">+Create New</a>
     </button>
-   
 }
 
+<br />
 <br />
 
 <table class="table">
@@ -42,10 +42,10 @@
                         <p>
                             @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
                             {
-                                <a class="text-primary" asp-action="Edit" asp-route-id="@item.TeamID">Edit</a> 
+                                <a class="text-primary" asp-action="Edit" asp-route-id="@item.TeamID">Edit</a>
                             }
 
-                            <a class="text-primary" asp-action="Details" asp-route-id="@item.TeamID">Details</a> 
+                            <a class="text-primary" asp-action="Details" asp-route-id="@item.TeamID">Details</a>
 
 
 
