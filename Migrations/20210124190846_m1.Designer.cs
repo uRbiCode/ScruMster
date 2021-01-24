@@ -10,8 +10,8 @@ using ScruMster.Data;
 namespace ScruMster.Migrations
 {
     [DbContext(typeof(ScruMsterContext))]
-    [Migration("20210124140442_M1")]
-    partial class M1
+    [Migration("20210124190846_m1")]
+    partial class m1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

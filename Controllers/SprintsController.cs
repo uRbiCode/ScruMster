@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -132,7 +131,6 @@ namespace ScruMster.Controllers
 
             }
             ViewBag.allAuthors = allAuthors;
-
             if (currentUser.TeamID == sprint.TeamID || User.IsInRole("Admin") || User.IsInRole("Manager"))
             {
                 return View(sprint);
@@ -163,13 +161,6 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
         {
-            foreach (var item in _context.Sprints)
-            {
-                if (sprint.Name == item.Name)
-                {
-                    throw new Exception("Sprint with that name already exists!");
-                }
-            }
             var owner = await _userManager.GetUserAsync(User);
             if (owner.Id == "AdminID") throw new Exception("Section under development");
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

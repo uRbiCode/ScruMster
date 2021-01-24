@@ -43,9 +43,9 @@ namespace ScruMster.Controllers
                         {
                             ViewBag.ShowCreate = false;
                             break;
-                        }        
-                    }                   
-                    return View(await _context.Teams.Where(s => s.TeamID == user.TeamID).ToListAsync());                    
+                        }
+                    }
+                    return View(await _context.Teams.Where(s => s.TeamID == user.TeamID).ToListAsync());
                 }
             }
             return View(await _context.Teams.ToListAsync());
@@ -78,7 +78,7 @@ namespace ScruMster.Controllers
         public IActionResult Create()
         {
             var currentUser = _userManager.GetUserId(User);
-            foreach(var ifTeam in _context.Teams)
+            foreach (var ifTeam in _context.Teams)
                 if (ifTeam.ownerID == currentUser && currentUser != "AdminID")
                 {
                     throw new Exception("You already own a team!");
@@ -97,13 +97,13 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("TeamID,Name")] Team team, string[] selectedScruMsterUsers)
         {
-            foreach (var item in _context.Teams)
-            {
-                if (team.Name == item.Name)
-                {
-                    throw new Exception("Team with that name already exist!");
-                }
-            }
+            /*            foreach (var item in _context.Teams)
+                        {
+                            if (team.Name == item.Name)
+                            {
+                                throw new Exception("Team with that name already exist!");
+                            }
+                        }*/
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser.Id == "AdminID") throw new Exception("Section under development");
             if (selectedScruMsterUsers != null)
@@ -164,11 +164,13 @@ namespace ScruMster.Controllers
         {
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser.Id == "AdminID") throw new Exception("Section under development");
-            if (currentUser.TeamID != id || currentUser.TeamID == null) throw new Exception("You can't edit other teams data!");          
+            if (currentUser.TeamID != id || currentUser.TeamID == null) throw new Exception("You can't edit other teams data!");
             if (id != team.TeamID)
             {
                 return NotFound();
             }
+
+
 
             if (ModelState.IsValid)
             {

@@ -30,16 +30,16 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in ViewBag.comments) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.AddTime)
+                @item.AddTime
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Text)
+                @item.Text
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Sprint.Name)
+                @item.Sprint.Name
             </td>
             <td>
                 <a class="text-primary" asp-action="Details" asp-route-id="@item.CommentId">Details</a> |
