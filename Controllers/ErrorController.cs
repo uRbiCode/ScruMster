@@ -25,8 +25,8 @@ namespace ScruMster.Controllers
             return View("NotFound");
         }
 
-        [AllowAnonymous]
         [Route("Error")]
+        [AllowAnonymous]
         public IActionResult Error()
         {
             // Retrieve the exception Details
