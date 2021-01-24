@@ -14,7 +14,7 @@
     <button type="button" class="btn btn-outline-primary btn-sm">
         <a class=" nav-link text-primary" asp-action="Create">+Create New</a>
     </button>
-    
+
 }
 <form asp-action="Index" method="get">
     <div class="form-actions no-color">
@@ -66,9 +66,20 @@
                     @Html.DisplayFor(modelItem => item.Team.Name)
                 </td>
                 <td>
-                    <a class="text-primary" asp-action="Edit" asp-route-id="@item.SprintID">Edit</a> |
-                    <a class="text-primary" asp-action="Details" asp-route-id="@item.SprintID">Details</a> |
-                    <a class="text-danger" asp-action="Delete" asp-route-id="@item.SprintID">Delete</a>   |
+                    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+                    {
+                        <a class="text-primary" asp-action="Edit" asp-route-id="@item.SprintID">Edit</a>
+                    }
+
+                    <a class="text-primary" asp-action="Details" asp-route-id="@item.SprintID">Details</a>
+
+
+
+                    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+                    {
+
+                        <a class="text-danger" asp-action="Delete" asp-route-id="@item.SprintID">Delete</a>
+                    }
 
                 </td>
             </tr>
