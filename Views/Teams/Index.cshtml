@@ -10,7 +10,7 @@
 
 <h1>Index</h1>
 
-@if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+@if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || (User.IsInRole("Manager") && ViewBag.ShowCreate)))
 {
 
     <button type="button" class="btn btn-outline-primary btn-sm">

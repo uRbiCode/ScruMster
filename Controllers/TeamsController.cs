@@ -28,7 +28,7 @@ namespace ScruMster.Controllers
         public async Task<IActionResult> Index()
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            ViewBag.HideCreate = true;
+            ViewBag.ShowCreate = true;
             if (User.IsInRole("Admin"))
             {
                 return View(await _context.Teams.ToListAsync());
@@ -41,7 +41,7 @@ namespace ScruMster.Controllers
                     {
                         if (currentUser.Id == team.ownerID)
                         {
-                            ViewBag.HideCreate = false;
+                            ViewBag.ShowCreate = false;
                             break;
                         }        
                     }                   
