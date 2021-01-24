@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace ScruMster.Controllers
 {
@@ -45,14 +43,23 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
-
+            ViewBag.tempUser = _userManager.Users.FirstOrDefault(s => s.Id == comment.ScruMsterUserId);
             return View(comment);
         }
 
         // GET: Comments/Create
         public IActionResult Create()
         {
-            ViewData["SprintID"] = new SelectList(_context.Sprints, "SprintID", "SprintID");
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = new ScruMsterUser();
+            foreach (var item in _context.ScruMsterUsers)
+            {
+                if (item.Id == currentUserId)
+                {
+                    user = item;
+                }
+            }
+            ViewData["SprintID"] = new SelectList(_context.Sprints.Where(s => s.TeamID == user.TeamID), "SprintID", "SprintID");
             return View();
         }
 
@@ -63,7 +70,21 @@ namespace ScruMster.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CommentId,AddTime,Text,SprintID")] Comment comment)
         {
-           comment.Author = await _userManager.GetUserAsync(User);
+            var currentUser = await _userManager.GetUserAsync(User);
+            /*            if (User.IsInRole("Admin"))
+                        {
+                            return View(await _context.Teams.ToListAsync());
+                        }
+                        foreach (var user in _context.ScruMsterUsers)
+                        {
+                            if (user == currentUser)
+                            {
+                                return View(await _context.Sprints.Where(s => s.TeamID == user.TeamID).ToListAsync());
+                            }
+                        }*/
+
+            comment.ScruMsterUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            comment.Author = await _userManager.GetUserAsync(User);
 
             if (ModelState.IsValid)
             {
@@ -71,7 +92,16 @@ namespace ScruMster.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["SprintID"] = new SelectList(_context.Sprints, "SprintID", "Description", comment.SprintID);
+
+            foreach (var s in _context.Sprints)
+            {
+                if (s.SprintID == comment.SprintID)
+                {
+                    _context.Comments.Add(comment);
+                    s.Comments.Add(comment);
+                }
+            }
+            ViewData["SprintID"] = new SelectList(_context.Sprints.Where(s => s.TeamID == currentUser.TeamID), "SprintID", "Description", comment.SprintID);
             return View(comment);
         }
 

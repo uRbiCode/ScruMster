@@ -19,6 +19,23 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Name)
         </dd>
+        <dt class="col-sm-2">
+            Leader 
+        </dt>
+        <dd class="col-sm-10">
+            <div><pre>@ViewBag.teamLeader.FirstName            @ViewBag.teamLeader.LastName</pre></div> 
+        </dd>
+        <dt class="col-sm-2">
+            Users 
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var item in ViewBag.teamUsers)
+            {
+                @if (item.Id != @ViewBag.teamLeader.Id)
+                {
+                    <div><pre>@item.FirstName            @item.LastName</pre></div>
+                }}
+        </dd>
     </dl>
 </div>
 

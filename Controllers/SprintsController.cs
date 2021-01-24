@@ -1,10 +1,3 @@
-
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +5,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace ScruMster.Controllers
 {
@@ -28,20 +26,61 @@ namespace ScruMster.Controllers
         }
 
         // GET: Sprints
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder,
+    string currentFilter,
+    string searchString,
+    int? pageNumber)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            if(User.IsInRole("User"))
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+            if (searchString != null)
             {
-                var scruMsterContext = _context.Sprints.Include(s => s.Team).Where(s => s.TeamID == currentUser.TeamID);
-                return View(await scruMsterContext.ToListAsync());
+                pageNumber = 1;
             }
             else
             {
-                var scruMsterContext = _context.Sprints.Include(s => s.Team);
-                return View(await scruMsterContext.ToListAsync());
+                searchString = currentFilter;
             }
-            
+
+            ViewData["CurrentFilter"] = searchString;
+            var sprints = from s in _context.Sprints
+                          select s;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                sprints = sprints.Where(s => s.Name.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    sprints = sprints.OrderByDescending(s => s.Name);
+                    break;
+                case "Date":
+                    sprints = sprints.OrderBy(s => s.Deadline);
+                    break;
+                case "date_desc":
+                    sprints = sprints.OrderByDescending(s => s.Deadline);
+                    break;
+                default:
+                    sprints = sprints.OrderBy(s => s.Name);
+                    break;
+            }
+            int pageSize = 3;
+            //return View(await PaginatedList<Student>.CreateAsync(students.AsNoTracking(), pageNumber ?? 1, pageSize));
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (User.IsInRole("User"))
+            {
+                sprints = sprints.Include(s => s.Team).Where(s => s.TeamID == currentUser.TeamID);
+                return View(await sprints.AsNoTracking().ToListAsync());
+            }
+            else
+            {
+                sprints = sprints.Include(s => s.Team);
+                return View(await sprints.AsNoTracking().ToListAsync());
+            }
+
         }
 
         // GET: Sprints/Details/5
@@ -52,15 +91,15 @@ namespace ScruMster.Controllers
                 return NotFound();
             }
 
-           // ViewBag.vbComment = _context.Comments.ToList();
+            // ViewBag.vbComment = _context.Comments.ToList();
             //ViewBag.vbSprint = _context.Sprints.ToList();
 
-/*        dynamic mymodel = new ExpandoObject();  
-        mymodel.Sprints = await _context.Sprints.Include(s => s.Team)
-                .FirstOrDefaultAsync(m => m.SprintID == id);
-        mymodel.Comments = await _context.Comments
-                .FirstOrDefaultAsync(m => m.SprintId == id);
-*/
+            /*        dynamic mymodel = new ExpandoObject();  
+                    mymodel.Sprints = await _context.Sprints.Include(s => s.Team)
+                            .FirstOrDefaultAsync(m => m.SprintID == id);
+                    mymodel.Comments = await _context.Comments
+                            .FirstOrDefaultAsync(m => m.SprintId == id);
+            */
             var sprint = await _context.Sprints
                 .Include(s => s.Team)
                 .FirstOrDefaultAsync(m => m.SprintID == id);
@@ -69,6 +108,23 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
+
+            // DODANO
+            ViewBag.allComments = _context.Comments.Where(m => m.SprintID == id);
+            var allAuthors = new List<ScruMsterUser>();
+            foreach (var comment in _context.Comments.Where(m => m.SprintID == id))
+            {
+                foreach (var user in _context.ScruMsterUsers)
+                {
+                    if (user.Id == comment.ScruMsterUserId)
+                    {
+                        allAuthors.Add(user);
+                    }
+                }
+
+            }
+            ViewBag.allAuthors = allAuthors;
+
 
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser.TeamID == sprint.TeamID || User.IsInRole("Admin") || User.IsInRole("Manager"))
@@ -79,34 +135,35 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
+
         }
 
 
 
-                // GET: Sprints/Comments/5
-        public async Task<IActionResult> Comments (int? id)
+        // GET: Sprints/Comments/5
+        public async Task<IActionResult> Comments(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-/*
-            ViewBag.vbComment = _context.Comments.ToList();
-            ViewBag.vbSprint = _context.Sprints.ToList();
+            /*
+                        ViewBag.vbComment = _context.Comments.ToList();
+                        ViewBag.vbSprint = _context.Sprints.ToList();
 
-                   dynamic mymodel = new ExpandoObject();  
-                    mymodel.Sprints = await _context.Sprints.Include(s => s.Team)
-                            .FirstOrDefaultAsync(m => m.SprintID == id);
-                    mymodel.Comments = await _context.Comments
-                            .FirstOrDefaultAsync(m => m.SprintId == id);*/
-            
+                               dynamic mymodel = new ExpandoObject();  
+                                mymodel.Sprints = await _context.Sprints.Include(s => s.Team)
+                                        .FirstOrDefaultAsync(m => m.SprintID == id);
+                                mymodel.Comments = await _context.Comments
+                                        .FirstOrDefaultAsync(m => m.SprintId == id);*/
+
             var sprint = await _context.Sprints
                 .Include(s => s.Team)
                 .FirstOrDefaultAsync(m => m.SprintID == id);
 
-             var comment = await _context.Comments
-                .Include(s => s.Sprint)
-                .FirstOrDefaultAsync(m => m.SprintID == id);
+            var comment = await _context.Comments
+               .Include(s => s.Sprint)
+               .FirstOrDefaultAsync(m => m.SprintID == id);
 
 
             if (sprint == null)
