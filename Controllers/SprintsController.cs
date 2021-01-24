@@ -26,10 +26,7 @@ namespace ScruMster.Controllers
         }
 
         // GET: Sprints
-        public async Task<IActionResult> Index(string sortOrder,
-    string currentFilter,
-    string searchString,
-    int? pageNumber)
+        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
         {
             ViewData["CurrentSort"] = sortOrder;
             ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
@@ -158,6 +155,13 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
         {
+            foreach (var item in _context.Sprints)
+            {
+                if (sprint.Name == item.Name)
+                {
+                    throw new Exception("Sprint with that name already exist!");
+                }
+            }
             var owner = await _userManager.GetUserAsync(User);
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)

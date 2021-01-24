@@ -80,6 +80,13 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("TeamID,Name")] Team team, string[] selectedScruMsterUsers)
         {
+            foreach (var item in _context.Teams)
+            {
+                if (team.Name == item.Name)
+                {
+                    throw new Exception("Team with that name already exist!");
+                }
+            }
             if (selectedScruMsterUsers != null)
             {
                 var owner = await _userManager.GetUserAsync(User);
