@@ -1,4 +1,3 @@
-using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -34,8 +33,8 @@ namespace ScruMster
             //services.AddTransient<IEmailSender, YourSmsSender>();
             //services.AddScoped<IUserClaimsPrincipalFactory<ScruMsterUser>>();
 
-        services.AddDbContext<ScruMsterContext>(options =>
-        options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ScruMster;Trusted_Connection=True;MultipleActiveResultSets=true"));
+            services.AddDbContext<ScruMsterContext>(options =>
+            options.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ScruMster;Trusted_Connection=True;MultipleActiveResultSets=true"));
 
 
 
@@ -114,7 +113,7 @@ namespace ScruMster
 
             var adminUser = await UserManager.FindByIdAsync("AdminID");
             await UserManager.AddToRoleAsync(adminUser, "Admin");
-        }        
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider services)
@@ -125,7 +124,8 @@ namespace ScruMster
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
+                app.UseStatusCodePagesWithReExecute("/Error/{0}");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }

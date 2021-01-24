@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -25,19 +26,58 @@ namespace ScruMster.Controllers
         }
 
         // GET: Sprints
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString, int? pageNumber)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            if (User.IsInRole("User"))
+            ViewData["CurrentSort"] = sortOrder;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+            ViewData["DateSortParm"] = sortOrder == "Date" ? "date_desc" : "Date";
+
+            if (searchString != null)
             {
-                var scruMsterContext = _context.Sprints.Include(s => s.Team).Where(s => s.TeamID == currentUser.TeamID);
-                return View(await scruMsterContext.ToListAsync());
+                pageNumber = 1;
             }
             else
             {
-                var scruMsterContext = _context.Sprints.Include(s => s.Team);
-                return View(await scruMsterContext.ToListAsync());
+                searchString = currentFilter;
             }
+
+            ViewData["CurrentFilter"] = searchString;
+            var sprints = from s in _context.Sprints
+                          select s;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                sprints = sprints.Where(s => s.Name.Contains(searchString));
+            }
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    sprints = sprints.OrderByDescending(s => s.Name);
+                    break;
+                case "Date":
+                    sprints = sprints.OrderBy(s => s.Deadline);
+                    break;
+                case "date_desc":
+                    sprints = sprints.OrderByDescending(s => s.Deadline);
+                    break;
+                default:
+                    sprints = sprints.OrderBy(s => s.Name);
+                    break;
+            }
+
+
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (User.IsInRole("User"))
+            {
+                sprints = sprints.Include(s => s.Team).Where(s => s.TeamID == currentUser.TeamID);
+                //return View(await sprints.AsNoTracking().ToListAsync());
+            }
+            else
+            {
+                sprints = sprints.Include(s => s.Team);
+                //return View(await sprints.AsNoTracking().ToListAsync());
+            }
+            int pageSize = 5;
+            return View(await PaginatedList<Sprint>.CreateAsync(sprints.AsNoTracking(), pageNumber ?? 1, pageSize));
 
         }
 
@@ -115,6 +155,13 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
         {
+            foreach (var item in _context.Sprints)
+            {
+                if (sprint.Name == item.Name)
+                {
+                    throw new Exception("Sprint with that name already exist!");
+                }
+            }
             var owner = await _userManager.GetUserAsync(User);
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
