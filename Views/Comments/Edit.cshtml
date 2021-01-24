@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "Edit";
 }
-
+<br />
 <h1>Edit</h1>
 
 <h4>Comment</h4>
@@ -29,14 +29,14 @@
                 <span asp-validation-for="SprintID" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-outline-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a class="text-primary" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

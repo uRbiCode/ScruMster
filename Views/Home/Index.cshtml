@@ -1,8 +1,85 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity
+@using ScruMster.Areas.Identity.Data
+
+@inject SignInManager<ScruMsterUser> SignInManager
+@inject UserManager<ScruMsterUser> UserManager
+
+@{
     ViewData["Title"] = "Home page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<br />
+
+@if (SignInManager.IsSignedIn(User))
+{
+    <div class="jumbotron">
+        <h1 class="display-3">Welcome!</h1>
+        <p class="lead">
+            ScruMster is an application supporting the management of work in a team.
+        </p>
+        <hr class="my-4">
+        <p>View project code</p>
+        <p class="lead">
+            <a class="btn btn-outline-primary btn-lg" href="https://github.com/uRbiCode/ScruMster" role="button">Go to GitHub</a>
+        </p>
+    </div>
+}
+
+else
+{ <div class="jumbotron">
+        <h1 class="display-3">Welcome!</h1>
+        <p class="lead">
+            ScruMster is an application supporting the management of work in a team.
+        </p>
+        <p class="lead">
+            Log in to use the application..
+        </p>
+        <hr class="my-4">
+        <p>View project code</p>
+        <p class="lead">
+            <a class="btn btn-outline-primary btn-lg" href="https://github.com/uRbiCode/ScruMster" role="button">Go to GitHub</a>
+        </p>
+    </div>
+
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <br /><br /><br />
+        <h2>Scrum Sprint</h2>
+        <br />
+        <p>
+            Scrum Sprint is a repeatable fixed time-box during which a done product of the highest possible value is created.
+            Sprint lies at the core of the Sprint agile methodology and can be thought of as an event which wraps all other Scrum events like Daily Scrums,
+            Scrum Review and Sprint Retrospective. Like all of scrum events, Sprint also has a maximum duration. Usually, a Sprint lasts for one month or less.
+        </p>
+    </div>
+
+    <div class="col-md-6 float-lg-right">
+        <section>
+            <img src="~/images/scrum.jpg" class="rounded float-md-right" height="350" width="500" asp-append-version="true" />
+        </section>
+    </div>
 </div>
+
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+
+<div class="text-center">
+    <h3>The Sprint is the fundamental unit of work when using Scrum</h3>
+    <br /><br />
+    <img src="~/images/sprints.jpg" class="rounded " height="340" width="720" asp-append-version="true" />
+</div>
+<br />
+<br />
+<br />
+<br />
+<p>Scrum advocates the use of fixed length sprints. The length of the sprint can be adapted to balance between the need to release rapidly and allowing enough time to complete a useful amount of work in each sprint..</p>
+
+<br />
+<br />
+<br />

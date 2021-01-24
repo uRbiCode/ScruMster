@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Delete";
 }
+<br />
 
 <h1>Delete</h1>
 
@@ -46,6 +47,6 @@
     <form asp-action="Delete">
         <input type="hidden" asp-for="SprintID" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <a class="text-primary" asp-action="Index">Back to List</a>
     </form>
 </div>
