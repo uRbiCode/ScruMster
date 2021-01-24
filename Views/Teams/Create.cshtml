@@ -36,18 +36,21 @@
                                                name="selectedScruMsterUsers"
                                                value="@scruMsterUser.Id"
                                                @(Html.Raw(scruMsterUser.Assigned ? "checked=\"checked\"" : "")) />
-                                    @scruMsterUser.FirstName @:  @scruMsterUser.LastName
+                                        @scruMsterUser.FirstName @:  @scruMsterUser.LastName
                                     @:</td>
                                 }
                             }
                         </tr>
-                    </table>     
-                    </div>
+                    </table>
                 </div>
+            </div>
+            @if (ViewBag.HideCreate)
+            {
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-outline-primary" />
                 </div>
-            </form>
+            }
+        </form>
     </div>
 </div>
 

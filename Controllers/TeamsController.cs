@@ -28,6 +28,7 @@ namespace ScruMster.Controllers
         public async Task<IActionResult> Index()
         {
             var currentUser = await _userManager.GetUserAsync(User);
+            ViewBag.HideCreate = true;
             if (User.IsInRole("Admin"))
             {
                 return View(await _context.Teams.ToListAsync());
@@ -36,7 +37,15 @@ namespace ScruMster.Controllers
             {
                 if (user == currentUser)
                 {
-                    return View(await _context.Teams.Where(s => s.TeamID == user.TeamID).ToListAsync());
+                    foreach (var team in _context.Teams)
+                    {
+                        if (currentUser.Id == team.ownerID)
+                        {
+                            ViewBag.HideCreate = false;
+                            break;
+                        }        
+                    }                   
+                    return View(await _context.Teams.Where(s => s.TeamID == user.TeamID).ToListAsync());                    
                 }
             }
             return View(await _context.Teams.ToListAsync());
@@ -46,6 +55,7 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager, User")]
         public async Task<IActionResult> Details(int? id)
         {
+            var currentUser = await _userManager.GetUserAsync(User);
             if (id == null)
             {
                 return NotFound();
@@ -59,6 +69,7 @@ namespace ScruMster.Controllers
             }
             ViewBag.teamLeader = _context.ScruMsterUsers.FirstOrDefault(m => m.Id == _context.Teams.FirstOrDefault(m => m.TeamID == id).ownerID);
             ViewBag.teamUsers = _context.ScruMsterUsers.Where(m => m.TeamID == id);
+            if(currentUser.TeamID != id) return RedirectToAction("Index", "Home"); //
             return View(team);
         }
 
@@ -66,6 +77,13 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public IActionResult Create()
         {
+            var currentUser = _userManager.GetUserId(User);
+            foreach(var ifTeam in _context.Teams)
+                if (ifTeam.ownerID == currentUser)
+                {                   
+                    ViewBag.MyErrorMessage = false;
+                    return RedirectToAction("Index", "Home");
+                }
             var team = new Team();
             team.ScruMsterUsers = new List<ScruMsterUser>();
             PopulateTeamScruMsterUser(team);
