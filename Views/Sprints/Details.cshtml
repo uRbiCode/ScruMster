@@ -42,7 +42,21 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Team.Name)
         </dd>
-       
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Comments)
+        </dt>
+        <dd class="col-sm-5">
+            @foreach (var item in ViewBag.allComments)
+            {
+                <div><pre>@item.Text            @item.AddTime</pre></div>
+            }
+        </dd>
+        <dd class="col-sm-5">
+            @foreach (var item in ViewBag.allAuthors)
+            {
+                <div><pre>@item.FirstName            @item.LastName</pre></div>
+            }
+        </dd>
     </dl>
 </div>
 

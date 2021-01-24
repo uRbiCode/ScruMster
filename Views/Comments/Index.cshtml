@@ -21,9 +21,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Sprint)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Author)
-            </th>
             
             <th></th>
         </tr>
@@ -38,11 +35,7 @@
                 @Html.DisplayFor(modelItem => item.Text)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Sprint.Description)
-            </td>
-            <td>
-                
-                @Html.DisplayFor(modelItem => item.Author.LastName)
+                @Html.DisplayFor(modelItem => item.Sprint.Name)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.CommentId">Edit</a> |

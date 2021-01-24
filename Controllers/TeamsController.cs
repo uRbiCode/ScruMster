@@ -1,12 +1,13 @@
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ScruMster.Areas.Identity.Data;
 using ScruMster.Data;
+using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ScruMster.Controllers
 {
@@ -22,7 +23,7 @@ namespace ScruMster.Controllers
             _userManager = userManager;
         }
 
-        
+
         // GET: Teams
         public async Task<IActionResult> Index()
         {
@@ -33,7 +34,7 @@ namespace ScruMster.Controllers
             }
             foreach (var user in _context.ScruMsterUsers)
             {
-                if(user == currentUser)
+                if (user == currentUser)
                 {
                     return View(await _context.Teams.Where(s => s.TeamID == user.TeamID).ToListAsync());
                 }
@@ -56,7 +57,8 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
-
+            ViewBag.teamLeader = _context.ScruMsterUsers.FirstOrDefault(m => m.Id == _context.Teams.FirstOrDefault(m => m.TeamID == id).ownerID);
+            ViewBag.teamUsers = _context.ScruMsterUsers.Where(m => m.TeamID == id);
             return View(team);
         }
 
@@ -119,7 +121,7 @@ namespace ScruMster.Controllers
             {
                 return NotFound();
             }
-                PopulateTeamScruMsterUserForEdit(team);
+            PopulateTeamScruMsterUserForEdit(team);
 
             return View(team);
         }
@@ -158,7 +160,7 @@ namespace ScruMster.Controllers
                     }
                     foreach (var user in _context.ScruMsterUsers)
                     {
-                        if(!selectedScruMsterUsers.Contains(user.Id) && user.TeamID == team.TeamID)
+                        if (!selectedScruMsterUsers.Contains(user.Id) && user.TeamID == team.TeamID)
                         {
                             user.TeamID = null;
                             user.Assigned = false;
@@ -205,7 +207,7 @@ namespace ScruMster.Controllers
                 return NotFound();
             }
             var viewModel = new List<ScruMsterUser>();
-            
+
             ViewBag.TotalUsers = viewModel;
             return View(team);
         }
@@ -228,7 +230,7 @@ namespace ScruMster.Controllers
                         user.TeamID = null;
                         user.Assigned = false;
                         user.Team = null;
-                    }                     
+                    }
                 }
             }
             _context.Teams.Remove(team);
@@ -251,7 +253,7 @@ namespace ScruMster.Controllers
             string adminID = "";
             string managerID = "";
             var adminList = new List<ScruMsterUser>();
-            foreach(var role in allRoles)
+            foreach (var role in allRoles)
             {
                 if (role.Name == "Admin")
                 {
@@ -272,7 +274,7 @@ namespace ScruMster.Controllers
                 if ((string)userRole.RoleId == adminID || (string)userRole.RoleId == managerID)
                 {
                     foreach (var user in allScruMsterUsers)
-                        if(user.Id == userRole.UserId)
+                        if (user.Id == userRole.UserId)
                             adminList.Add(user);
                 }
             }
@@ -291,7 +293,7 @@ namespace ScruMster.Controllers
                         Assigned = teamScruMsterUsers.Contains(user.Id)
                     });
                 }
-                    
+
             }
             ViewBag.TotalUsers = viewModel;
         }
@@ -329,24 +331,24 @@ namespace ScruMster.Controllers
                             adminList.Add(user);
                 }
             }
-                var viewModel = new List<ScruMsterUser>();
-                foreach (var user in allScruMsterUsers)
+            var viewModel = new List<ScruMsterUser>();
+            foreach (var user in allScruMsterUsers)
+            {
+                if (!adminList.Contains(user) && (user.TeamID == team.TeamID || user.Assigned == false))
                 {
-                    if (!adminList.Contains(user) && (user.TeamID == team.TeamID || user.Assigned == false))
+                    viewModel.Add(new ScruMsterUser
                     {
-                        viewModel.Add(new ScruMsterUser
-                        {
-                            Id = user.Id,
-                            FirstName = user.FirstName,
-                            LastName = user.LastName,
-                            TeamID = user.TeamID,
-                            Assigned = (team.TeamID == user.TeamID)
-                        });
-                    }
-
+                        Id = user.Id,
+                        FirstName = user.FirstName,
+                        LastName = user.LastName,
+                        TeamID = user.TeamID,
+                        Assigned = (team.TeamID == user.TeamID)
+                    });
                 }
-                ViewBag.TotalUsers = viewModel;           
-            
+
+            }
+            ViewBag.TotalUsers = viewModel;
+
         }
     }
 }
