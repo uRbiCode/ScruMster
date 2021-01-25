@@ -51,56 +51,94 @@
                   @foreach (var item in Model)
                   {
                       <tr>
-                          <td>
-                              @Html.DisplayFor(modelItem => item.Name)
-                          </td>
-
-
-                          @if (item.Deadline.Subtract(DateTime.Now).TotalDays <= 3)
+                          @if (item.IsDone == false)
                           {
-                              @if (item.Deadline < DateTime.Now)
+                              <td>
+                                  @Html.DisplayFor(modelItem => item.Name)
+                              </td>
+
+
+                              @if (item.Deadline.Subtract(DateTime.Now).TotalDays <= 3)
                               {
-                                  <td class="text-danger">
-                                      @Html.DisplayFor(modelItem => item.Deadline)
-                                  </td>
+                                  @if (item.Deadline < DateTime.Now)
+                                  {
+                                      <td class="text-danger">
+                                          @Html.DisplayFor(modelItem => item.Deadline)
+                                      </td>
+                                  }
+                                  else
+                                  {
+                                      <td class="text-warning">
+                                          @Html.DisplayFor(modelItem => item.Deadline)
+                                      </td>
+                                  }
                               }
                               else
                               {
-                                  <td class="text-warning">
+                                  <td class="text-black-50">
                                       @Html.DisplayFor(modelItem => item.Deadline)
                                   </td>
                               }
+
+                              <td>
+                                  @Html.DisplayFor(modelItem => item.IsDone)
+                              </td>
+                              <td>
+                                  @Html.DisplayFor(modelItem => item.Team.Name)
+                              </td>
+                              <td>
+                                  @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+                                  {
+                                      <a class="text-primary" asp-action="Edit" asp-route-id="@item.SprintID">Edit</a>
+                                  }
+
+                                  <a class="text-primary" asp-action="Details" asp-route-id="@item.SprintID">Details</a>
+
+
+
+                                  @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+                                  {
+
+                                      <a class="text-danger" asp-action="Delete" asp-route-id="@item.SprintID">Delete</a>
+                                  }
+
+                              </td>
                           }
                           else
                           {
-                              <td class="text-black-50">
+                              <td class="text-success">
+                                  @Html.DisplayFor(modelItem => item.Name)
+                              </td>
+
+                              <td class="text-success">
                                   @Html.DisplayFor(modelItem => item.Deadline)
                               </td>
+
+
+                              <td class="text-success">
+                                  @Html.DisplayFor(modelItem => item.IsDone)
+                              </td>
+                              <td class="text-success">
+                                  @Html.DisplayFor(modelItem => item.Team.Name)
+                              </td>
+                              <td>
+                                  @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+                                  {
+                                      <a class="text-primary" asp-action="Edit" asp-route-id="@item.SprintID">Edit</a>
+                                  }
+
+                                  <a class="text-primary" asp-action="Details" asp-route-id="@item.SprintID">Details</a>
+
+
+
+                                  @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+                                  {
+
+                                      <a class="text-danger" asp-action="Delete" asp-route-id="@item.SprintID">Delete</a>
+                                  }
+
+                              </td>
                           }
-
-                          <td>
-                              @Html.DisplayFor(modelItem => item.IsDone)
-                          </td>
-                          <td>
-                              @Html.DisplayFor(modelItem => item.Team.Name)
-                          </td>
-                          <td>
-                              @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
-                              {
-                                  <a class="text-primary" asp-action="Edit" asp-route-id="@item.SprintID">Edit</a>
-                              }
-
-                              <a class="text-primary" asp-action="Details" asp-route-id="@item.SprintID">Details</a>
-
-
-
-                              @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
-                              {
-
-                                  <a class="text-danger" asp-action="Delete" asp-route-id="@item.SprintID">Delete</a>
-                              }
-
-                          </td>
                       </tr>
                   }
               </tbody>
