@@ -1,0 +1,50 @@
+@using Microsoft.AspNetCore.Identity
+@using ScruMster.Areas.Identity.Data
+
+@inject SignInManager<ScruMsterUser> SignInManager
+@inject UserManager<ScruMsterUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="" asp-controller="Teams" asp-action="Index">Team</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="" asp-controller="Sprints" asp-action="Index">Sprint</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="" asp-controller="Comments" asp-action="Index">Comment</a>
+        </li>
+        <li class="nav-item">
+        <li class="nav-item">
+            <a class="nav-link text-light" asp-area="" asp-controller="Role" asp-action="Index">Role</a>
+        </li>
+        <a id="manage" class="nav-link text-light" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
+        </li>
+        <li class="nav-item">
+            <form id="logoutForm" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })"
+                  method="post">
+                >
+                <button id="logout" type="submit" class="nav-link btn btn-link text-light">Logout</button>
+            </form>
+
+        </li>
+    }
+    else
+    {
+
+
+        <div class="btn-group mr-2" role="group" aria-label="Second group">
+            <button type="button" class="btn btn-outline-info btn-sm">
+                <a class=" nav-link text-light" id="register" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            </button>
+        </div>
+
+        <div class="btn-group mr-2" role="group" aria-label="First group">
+            <button type="button" class="btn btn-info btn-sm">
+                <a class=" nav-link text-light" id="login" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            </button>
+        </div>
+    }
+</ul>

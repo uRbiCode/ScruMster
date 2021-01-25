@@ -1,0 +1,51 @@
+﻿@model IEnumerable<ScruMster.Areas.Identity.Data.Comment>
+
+@{
+    ViewData["Title"] = "Comments";
+}
+<br />
+<h1>Comment</h1>
+
+<button type="button" class="btn btn-outline-primary btn-sm">
+    <a class=" nav-link text-primary" asp-action="Create">+Create New</a>
+</button> 
+
+
+<br /><br />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AddTime)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Text)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sprint)
+            </th>
+            
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in ViewBag.comments) {
+        <tr>
+            <td>
+                @item.AddTime
+            </td>
+            <td>
+                @item.Text
+            </td>
+            <td>
+                @item.Sprint.Name
+            </td>
+            <td>
+                <a class="text-primary" asp-action="Details" asp-route-id="@item.CommentId">Details</a> |
+                <a class="text-danger" asp-action="Delete" asp-route-id="@item.CommentId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

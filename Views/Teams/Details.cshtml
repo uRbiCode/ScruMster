@@ -1,0 +1,106 @@
+﻿@model ScruMster.Areas.Identity.Data.Team
+@using Microsoft.AspNetCore.Identity
+@using ScruMster.Areas.Identity.Data
+@inject SignInManager<ScruMsterUser> SignInManager
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<br />
+<br />
+<h1>Details</h1>
+<br />
+<br />
+<div>
+    <h4>Team</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            Leader
+        </dt>
+
+
+        <dd class="col-sm-10">
+            <p>@ViewBag.teamLeader.FirstName @ViewBag.teamLeader.LastName</p>
+        </dd>
+        <br /><br /><br /><br />
+        <h3>Users</h3>
+
+
+        <table class="table table-hover table-primary">
+            <thead>
+                <tr>
+                    <th scope="col">First name</th>
+                    <th scope="col">Last name</th>
+                    <th scope="col">Email</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.teamUsers)
+                {
+
+                <tr class="table-light text-black-50">
+
+                    <td>@item.FirstName </td>
+                    <td>@item.LastName</td>
+                    <td>@item.Email</td>
+
+                </tr>
+
+                }
+            </tbody>
+        </table>
+
+    </dl>
+</div>
+
+<br />
+<br />
+<br />
+<br />
+<h3>Sprints</h3>
+
+<table class="table table-hover table-primary">
+    <thead>
+        <tr>
+             <thead>
+                 <tr>
+                     <th scope="col"> Name</th>
+                     <th scope="col"> Deadline</th>
+                 </tr>
+            </thead>
+    </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Sprints)
+        {
+        <tr class="table-light text-black-50">
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.Deadline.Date
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<div>
+    <br /><br /><br>
+    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+    {
+        <a class="text-primary" asp-action="Edit" asp-route-id="@Model.TeamID">Edit</a>
+    }
+
+    <a class="text-primary" asp-action="Index">Back to List</a>
+
+</div>

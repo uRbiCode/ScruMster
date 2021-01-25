@@ -1,0 +1,36 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>
+@using Microsoft.AspNetCore.Identity
+@using ScruMster.Areas.Identity.Data
+@inject SignInManager<ScruMsterUser> SignInManager
+@{
+    ViewData["Title"] = "Role";
+}
+<br />
+
+<h1>List of Roles</h1>
+@if (SignInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+{
+    <button type="button" class="btn btn-outline-primary btn-sm">
+        <a class=" nav-link text-primary" asp-action="Create">+Create New</a>
+    </button>
+
+}
+
+<br /><br />
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <td>Name</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in Model)
+        {
+            <tr>
+                <td>@role.Name</td>
+            </tr>
+
+        }
+    </tbody>
+</table>
