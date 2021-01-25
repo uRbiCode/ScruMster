@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ScruMster.Migrations
 {
-    public partial class m1 : Migration
+    public partial class M1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -208,11 +208,18 @@ namespace ScruMster.Migrations
                     AddTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     SprintID = table.Column<int>(type: "int", nullable: false),
-                    ScruMsterUserId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    ScruMsterUserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    AuthorName = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.CommentId);
+                    table.ForeignKey(
+                        name: "FK_Comments_AspNetUsers_ScruMsterUserId",
+                        column: x => x.ScruMsterUserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Comments_Sprints_SprintID",
                         column: x => x.SprintID,
@@ -288,6 +295,11 @@ namespace ScruMster.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Comments_ScruMsterUserId",
+                table: "Comments",
+                column: "ScruMsterUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_SprintID",

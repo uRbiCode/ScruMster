@@ -23,6 +23,7 @@ namespace ScruMster.Areas.Identity.Data
         public string ScruMsterUserId { get; set; }
         [NotMapped]
         public virtual ScruMsterUser Author { get; set; }
+        public virtual string AuthorName { get; set; }
 
         public Comment()
         {

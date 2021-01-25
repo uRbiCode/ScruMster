@@ -7,9 +7,11 @@
     ViewData["Title"] = "Details";
 }
 
-<br /><br />
+<br />
+<br />
 <h1>Details</h1>
-<br /><br />
+<br />
+<br />
 <div>
     <h4>Team</h4>
     <hr />
@@ -21,55 +23,84 @@
             @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class="col-sm-2">
-            Leader 
+            Leader
         </dt>
+
+
         <dd class="col-sm-10">
-            <div><pre>@ViewBag.teamLeader.FirstName            @ViewBag.teamLeader.LastName</pre></div> 
+            <p>@ViewBag.teamLeader.FirstName @ViewBag.teamLeader.LastName</p>
         </dd>
-        <dt class="col-sm-2">
-            Users 
-        </dt>
-        <dd class="col-sm-10">
-            @foreach (var item in ViewBag.teamUsers)
-            {
-                @if (item.Id != @ViewBag.teamLeader.Id)
+        <br /><br /><br /><br />
+        <h3>Users</h3>
+
+
+        <table class="table table-hover table-primary">
+            <thead>
+                <tr>
+                    <th scope="col">First name</th>
+                    <th scope="col">Last name</th>
+                    <th scope="col">Email</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in ViewBag.teamUsers)
                 {
-                    <div><pre>@item.FirstName            @item.LastName</pre></div>
-                }}
-        </dd>
+
+                <tr class="table-light text-black-50">
+
+                    <td>@item.FirstName </td>
+                    <td>@item.LastName</td>
+                    <td>@item.Email</td>
+
+                </tr>
+
+                }
+            </tbody>
+        </table>
+
     </dl>
 </div>
 
-<br /><br />
+<br />
+<br />
+<br />
+<br />
 <h3>Sprints</h3>
 
-<table class="table">
+<table class="table table-hover table-primary">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th></th>
-        </tr>
+             <thead>
+                 <tr>
+                     <th scope="col"> Name</th>
+                     <th scope="col"> Deadline</th>
+                 </tr>
+            </thead>
+    </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.Sprints)
         {
-            <tr>
-                <td>
-                    @item.Name
-                </td>
-            </tr>
+        <tr class="table-light text-black-50">
+            <td>
+                @item.Name
+            </td>
+            <td>
+                @item.Deadline.Date
+            </td>
+        </tr>
         }
     </tbody>
 </table>
 
 <div>
+    <br /><br /><br>
     @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
     {
         <a class="text-primary" asp-action="Edit" asp-route-id="@Model.TeamID">Edit</a>
     }
-    
-   <a class="text-primary" asp-action="Index">Back to List</a>
-   
+
+    <a class="text-primary" asp-action="Index">Back to List</a>
+
 </div>

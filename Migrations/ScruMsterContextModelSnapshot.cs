@@ -160,8 +160,11 @@ namespace ScruMster.Migrations
                     b.Property<DateTime>("AddTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ScruMsterUserId")
+                    b.Property<string>("AuthorName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ScruMsterUserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("SprintID")
                         .HasColumnType("int");
@@ -172,6 +175,8 @@ namespace ScruMster.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.HasKey("CommentId");
+
+                    b.HasIndex("ScruMsterUserId");
 
                     b.HasIndex("SprintID");
 
@@ -378,6 +383,10 @@ namespace ScruMster.Migrations
 
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Comment", b =>
                 {
+                    b.HasOne("ScruMster.Areas.Identity.Data.ScruMsterUser", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("ScruMsterUserId");
+
                     b.HasOne("ScruMster.Areas.Identity.Data.Sprint", "Sprint")
                         .WithMany("Comments")
                         .HasForeignKey("SprintID")
@@ -418,6 +427,11 @@ namespace ScruMster.Migrations
                         .HasForeignKey("SprintsSprintID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ScruMster.Areas.Identity.Data.ScruMsterUser", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("ScruMster.Areas.Identity.Data.Sprint", b =>

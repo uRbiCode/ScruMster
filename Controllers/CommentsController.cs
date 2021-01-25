@@ -126,6 +126,7 @@ namespace ScruMster.Controllers
 
             comment.ScruMsterUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             comment.Author = await _userManager.GetUserAsync(User);
+            comment.AuthorName = comment.Author.FirstName + " " + comment.Author.LastName;
 
             if (ModelState.IsValid)
             {

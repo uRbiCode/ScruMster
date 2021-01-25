@@ -8,7 +8,7 @@
     ViewData["Title"] = "Team";
 }
 
-<h1>Index</h1>
+<h1>Team</h1>
 
 @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || (User.IsInRole("Manager") && ViewBag.ShowCreate)))
 {

@@ -7,7 +7,7 @@
     ViewData["Title"] = "Sprint";
 }
 <br />
-<h1>Index</h1>
+<h1>Sprints</h1>
 
 @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
 {
@@ -16,92 +16,112 @@
     </button>
 
 }
+<br /><br />
 <form asp-action="Index" method="get">
     <div class="form-actions no-color">
         <p>
             Find by name: <input type="text" name="SearchString" value="@ViewData["CurrentFilter"]" />
-            <input type="submit" value="Search" class="btn btn-outline-primary" /> |
-            <a asp-action="Index">Back to Full List</a>
+            <input type="submit" value="Search" class="btn btn-primary disabled" /> 
+            <a class="text-dark" asp-action="Index">Back to Full List</a>
         </p>
     </div>
 </form>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Name</a>
-            </th>
-            <th>
-                Description
-            </th>
-            <th>
-                <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Deadline</a>
-            </th>
-            <th>
-                Is done
-            </th>
-            <th>
-                Team
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Deadline)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.IsDone)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Team.Name)
-                </td>
-                <td>
-                    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
-                    {
-                        <a class="text-primary" asp-action="Edit" asp-route-id="@item.SprintID">Edit</a>
-                    }
+<br /><br />
+      <div class="table-responsive-xl">
+          <table class="table table-hover bg-light row-cols-md-2">
+              <thead>
 
-                    <a class="text-primary" asp-action="Details" asp-route-id="@item.SprintID">Details</a>
+                  <tr>
+                      <th>
+                          <a class="text-dark" asp-action="Index" asp-route-sortOrder="@ViewData["NameSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Name</a>
+                      </th>
+                      <th>
+                          <a class="text-dark" asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]" asp-route-currentFilter="@ViewData["CurrentFilter"]">Deadline</a>
+                      </th>
+                      <th class="text-dark">
+                          Is done
+                      </th>
+                      <th class="text-dark">
+                          Team
+                      </th>
+                      <th></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  @foreach (var item in Model)
+                  {
+                      <tr>
+                          <td>
+                              @Html.DisplayFor(modelItem => item.Name)
+                          </td>
 
 
+                          @if (item.Deadline.Subtract(DateTime.Now).TotalDays <= 3)
+                          {
+                              @if (item.Deadline < DateTime.Now)
+                              {
+                                  <td class="text-danger">
+                                      @Html.DisplayFor(modelItem => item.Deadline)
+                                  </td>
+                              }
+                              else
+                              {
+                                  <td class="text-warning">
+                                      @Html.DisplayFor(modelItem => item.Deadline)
+                                  </td>
+                              }
+                          }
+                          else
+                          {
+                              <td class="text-black-50">
+                                  @Html.DisplayFor(modelItem => item.Deadline)
+                              </td>
+                          }
 
-                    @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
-                    {
+                          <td>
+                              @Html.DisplayFor(modelItem => item.IsDone)
+                          </td>
+                          <td>
+                              @Html.DisplayFor(modelItem => item.Team.Name)
+                          </td>
+                          <td>
+                              @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+                              {
+                                  <a class="text-primary" asp-action="Edit" asp-route-id="@item.SprintID">Edit</a>
+                              }
 
-                        <a class="text-danger" asp-action="Delete" asp-route-id="@item.SprintID">Delete</a>
-                    }
+                              <a class="text-primary" asp-action="Details" asp-route-id="@item.SprintID">Details</a>
 
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-@{
-    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
-    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
-}
 
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PageIndex - 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-outline-primary @prevDisabled">
-    Previous
-</a>
-<a asp-action="Index"
-   asp-route-sortOrder="@ViewData["CurrentSort"]"
-   asp-route-pageNumber="@(Model.PageIndex + 1)"
-   asp-route-currentFilter="@ViewData["CurrentFilter"]"
-   class="btn btn-outline-primary @nextDisabled">
-    Next
-</a>
+
+                              @if (SignInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Manager")))
+                              {
+
+                                  <a class="text-danger" asp-action="Delete" asp-route-id="@item.SprintID">Delete</a>
+                              }
+
+                          </td>
+                      </tr>
+                  }
+              </tbody>
+          </table>
+          </div>
+          @{
+              var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+              var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+          }
+
+          <a asp-action="Index"
+             asp-route-sortOrder="@ViewData["CurrentSort"]"
+             asp-route-pageNumber="@(Model.PageIndex - 1)"
+             asp-route-currentFilter="@ViewData["CurrentFilter"]"
+             class="btn btn-outline-primary @prevDisabled">
+              Previous
+          </a>
+          <a asp-action="Index"
+             asp-route-sortOrder="@ViewData["CurrentSort"]"
+             asp-route-pageNumber="@(Model.PageIndex + 1)"
+             asp-route-currentFilter="@ViewData["CurrentFilter"]"
+             class="btn btn-outline-primary @nextDisabled">
+              Next
+          </a>
