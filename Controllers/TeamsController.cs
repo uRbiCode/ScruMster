@@ -256,7 +256,6 @@ namespace ScruMster.Controllers
             var currentUser = await _userManager.GetUserAsync(User);
             if ((currentUser.TeamID != id || currentUser.TeamID == null) && currentUser.Id != "AdminID") throw new Exception("You can't delete other teams!");
             var team = await _context.Teams.FindAsync(id);
-            if(team.Sprints.Any()) throw new Exception("You can't delete a team with active sprints!");
             if (team != null)
             {
                 var allScruMsterUsers = _context.ScruMsterUsers;
@@ -271,6 +270,9 @@ namespace ScruMster.Controllers
                     }
                 }
             }
+            currentUser.TeamID = null;
+            currentUser.Assigned = false;
+            currentUser.Team = null;
             _context.Teams.Remove(team);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

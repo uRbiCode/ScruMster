@@ -137,6 +137,10 @@ namespace ScruMster.Controllers
         public IActionResult Create()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            foreach(var currentUser in _context.ScruMsterUsers)
+            {
+                if (currentUser.Id == userId && currentUser.TeamID == null && currentUser.Id != "AdminID") return RedirectToAction("Create", "Teams");
+            }
             ViewData["TeamID"] = new SelectList(_context.Teams.Where(s => s.ownerID == userId), "TeamID", "Name");
             return View();
         }
@@ -149,6 +153,10 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Create([Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
         {
+            if (sprint.Deadline < DateTime.Now.Date)
+            {
+                throw new Exception("Date cannot be from the past!");
+            }
             var owner = await _userManager.GetUserAsync(User);
             if (owner.Id == "AdminID") throw new Exception("Section under development");
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -199,6 +207,10 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> Edit(int id, [Bind("SprintID,Name,Description,Deadline,IsDone,TeamID")] Sprint sprint)
         {
+            if (sprint.Deadline < DateTime.Now.Date)
+            {
+                throw new Exception("Date cannot be from the past!");
+            }
             var currentUser = await _userManager.GetUserAsync(User);
             if (currentUser.Id == "AdminID") throw new Exception("Section under development");
             if (!User.IsInRole("Admin"))
