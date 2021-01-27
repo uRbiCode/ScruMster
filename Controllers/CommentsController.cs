@@ -112,18 +112,6 @@ namespace ScruMster.Controllers
         public async Task<IActionResult> Create([Bind("CommentId,AddTime,Text,SprintID")] Comment comment)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            /*            if (User.IsInRole("Admin"))
-                        {
-                            return View(await _context.Teams.ToListAsync());
-                        }
-                        foreach (var user in _context.ScruMsterUsers)
-                        {
-                            if (user == currentUser)
-                            {
-                                return View(await _context.Sprints.Where(s => s.TeamID == user.TeamID).ToListAsync());
-                            }
-                        }*/
-
             comment.ScruMsterUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             comment.Author = await _userManager.GetUserAsync(User);
             comment.AuthorName = comment.Author.FirstName + " " + comment.Author.LastName;

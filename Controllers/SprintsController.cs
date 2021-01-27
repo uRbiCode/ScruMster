@@ -42,12 +42,13 @@ namespace ScruMster.Controllers
             }
 
             ViewData["CurrentFilter"] = searchString;
-            var sprints = from s in _context.Sprints
-                          select s;
-            if (!String.IsNullOrEmpty(searchString))
-            {
-                sprints = sprints.Where(s => s.Name.Contains(searchString));
-            }
+            var sprints = from s in _context.Sprints select s;
+                 if (!String.IsNullOrEmpty(searchString))
+                 {
+                     sprints = sprints.Where(s => s.Name.Contains(searchString));
+                 }
+
+
             switch (sortOrder)
             {
                 case "name_desc":
@@ -69,12 +70,10 @@ namespace ScruMster.Controllers
             if (User.IsInRole("User") || User.IsInRole("Manager"))
             {
                 sprints = sprints.Include(s => s.Team).Where(s => s.TeamID == currentUser.TeamID);
-                //return View(await sprints.AsNoTracking().ToListAsync());
             }
             else
             {
                 sprints = sprints.Include(s => s.Team);
-                //return View(await sprints.AsNoTracking().ToListAsync());
             }
             int pageSize = 5;
             return View(await PaginatedList<Sprint>.CreateAsync(sprints.AsNoTracking(), pageNumber ?? 1, pageSize));
@@ -86,42 +85,22 @@ namespace ScruMster.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            foreach(var sprintCheck in _context.Sprints)
-            {
-                if(sprintCheck.SprintID == id)
-                {
-                    if ((currentUser.TeamID != sprintCheck.TeamID || currentUser.TeamID == null) && currentUser.Id != "AdminID") throw new Exception("You can't access other teams sprints!");
-                }
-            }
-           
+            var sprintCheck =  _context.Sprints.Where(s => s.SprintID == id).Where(s => s.TeamID != currentUser.TeamID);
+                if( sprintCheck.Any() ) throw new Exception("You can't access other teams sprints!");
+
             if (id == null)
             {
                 return NotFound();
             }
-            var sprint = await _context.Sprints
-                .Include(s => s.Team)
-                .FirstOrDefaultAsync(m => m.SprintID == id);
+            var sprint = await _context.Sprints.Include(s => s.Team).FirstOrDefaultAsync(m => m.SprintID == id);
 
             if (sprint == null)
             {
                 return NotFound();
             }
 
-            // DODANO
             ViewBag.allComments = _context.Comments.Where(m => m.SprintID == id);
-            var allAuthors = new List<ScruMsterUser>();
-            foreach (var comment in _context.Comments.Where(m => m.SprintID == id))
-            {
-                foreach (var user in _context.ScruMsterUsers)
-                {
-                    if (user.Id == comment.ScruMsterUserId)
-                    {
-                        allAuthors.Add(user);
-                    }
-                }
 
-            }
-            ViewBag.allAuthors = allAuthors;
             if (currentUser.TeamID == sprint.TeamID || User.IsInRole("Admin") || User.IsInRole("Manager"))
             {
                 return View(sprint);
@@ -252,21 +231,19 @@ namespace ScruMster.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            foreach (var sprintCheck in _context.Sprints)
+            var sprintCheck = _context.Sprints.Where(s => s.SprintID == id).Where(s => s.TeamID != currentUser.TeamID);
+            if (sprintCheck.Any())
             {
-                if (sprintCheck.SprintID == id)
-                {
-                    if ((currentUser.TeamID != sprintCheck.TeamID || currentUser.TeamID == null) && currentUser.Id != "AdminID") throw new Exception("You can't delete other teams sprints!");
-                }
+                throw new Exception("You can't delete other teams sprints!");
             }
+
             if (id == null)
             {
                 return NotFound();
             }
 
-            var sprint = await _context.Sprints
-                .Include(s => s.Team)
-                .FirstOrDefaultAsync(m => m.SprintID == id);
+            var sprint = await _context.Sprints.Include(s => s.Team).FirstOrDefaultAsync(m => m.SprintID == id);
+            
             if (sprint == null)
             {
                 return NotFound();
@@ -281,14 +258,6 @@ namespace ScruMster.Controllers
         [Authorize(Roles = "Admin, Manager")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            foreach (var sprintCheck in _context.Sprints)
-            {
-                if (sprintCheck.SprintID == id)
-                {
-                    if ((currentUser.TeamID != sprintCheck.TeamID || currentUser.TeamID == null) && currentUser.Id != "AdminID") throw new Exception("You can't delete other teams sprints!");
-                }
-            }
             var sprint = await _context.Sprints.FindAsync(id);
             _context.Sprints.Remove(sprint);
             await _context.SaveChangesAsync();
