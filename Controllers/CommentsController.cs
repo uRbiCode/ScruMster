@@ -29,26 +29,17 @@ namespace ScruMster.Controllers
         {
             var currentUser = await _userManager.GetUserAsync(User);
             var Comments = new List<Comment>();
-            //var team = _context.Teams.FirstOrDefault(s => s.TeamID == currentUser.TeamID);
-            foreach (var team in _context.Teams)
-            {
-                if (currentUser.TeamID == team.TeamID)
-                {
-                    foreach (var sprint in _context.Sprints)
-                    {
-                        if (sprint.TeamID == team.TeamID)
-                        {
-                            foreach (var comment in _context.Comments)
-                            {
-                                if(comment.SprintID == sprint.SprintID) Comments.Add(comment);
-                            }
-                        }
-                    }
-                }
 
-            }/////////////////////////
+            foreach (var sprint in _context.Sprints.Where(s => s.TeamID == _context.Teams.Where(t => t.TeamID == currentUser.TeamID).FirstOrDefault().TeamID))
+            {
+                foreach (var comment in _context.Comments.Where(c => c.SprintID == sprint.SprintID))
+                {
+                    Comments.Add(comment);
+                }
+            }
+
             ViewBag.comments = Comments;
-            if(currentUser.Id == "AdminID") ViewBag.comments = _context.Comments;
+            if (currentUser.Id == "AdminID") ViewBag.comments = _context.Comments;
             return View();
         }
 
@@ -57,21 +48,20 @@ namespace ScruMster.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            foreach (var commentCheck in _context.Comments)
-            {
-                if (commentCheck.CommentId == id)
-                {
-                    foreach (var sprintCheck in _context.Sprints)
-                    {
-                        if (commentCheck.SprintID == sprintCheck.SprintID && sprintCheck.TeamID != currentUser.TeamID && currentUser.Id != "AdminID")
-                        {
-                            throw new Exception("You can't access this comment!");
 
-                        }
+
+            if (currentUser.Id != "AdminID")
+            {
+                foreach (var commentCheck in _context.Comments.Where(c => c.CommentId == id))
+                {
+                    foreach (var sprintCheck in _context.Sprints.Where(s => s.TeamID != currentUser.TeamID)
+                        .Where(s => s.SprintID == commentCheck.SprintID))
+                    {
+                        throw new Exception("You can't access this comment!");
                     }
                 }
             }
-            ///
+
             if (id == null)
             {
                 return NotFound();
@@ -91,16 +81,8 @@ namespace ScruMster.Controllers
         // GET: Comments/Create
         public IActionResult Create()
         {
-            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = new ScruMsterUser();
-            foreach (var item in _context.ScruMsterUsers)
-            {
-                if (item.Id == currentUserId)
-                {
-                    user = item;
-                }
-            }
-            ViewData["SprintID"] = new SelectList(_context.Sprints.Where(s => s.TeamID == user.TeamID), "SprintID", "Name");
+            ViewData["SprintID"] = new SelectList(_context.Sprints.Where(s => s.TeamID == _context.ScruMsterUsers
+            .Where(i => i.Id == User.FindFirstValue(ClaimTypes.NameIdentifier)).FirstOrDefault().TeamID), "SprintID", "Name");
             return View();
         }
 
@@ -123,13 +105,10 @@ namespace ScruMster.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            foreach (var s in _context.Sprints)
+            foreach (var s in _context.Sprints.Where(s => s.SprintID == comment.SprintID))
             {
-                if (s.SprintID == comment.SprintID)
-                {
-                    _context.Comments.Add(comment);
-                    s.Comments.Add(comment);
-                }
+                _context.Comments.Add(comment);
+                s.Comments.Add(comment);
             }
             ViewData["SprintID"] = new SelectList(_context.Sprints.Where(s => s.TeamID == currentUser.TeamID), "SprintID", "Name", comment.SprintID);
             return View(comment);
@@ -138,20 +117,13 @@ namespace ScruMster.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             var currentUser = await _userManager.GetUserAsync(User);
-            foreach (var commentCheck in _context.Comments)
-            {
-                if (commentCheck.CommentId == id)
-                {
-                    foreach (var sprintCheck in _context.Sprints)
-                    {
-                        if (commentCheck.SprintID == sprintCheck.SprintID && sprintCheck.TeamID != currentUser.TeamID)
-                        {
-                            throw new Exception("You can't access this comment!");
 
-                        }
-                    }
-                }
+            if (_context.Sprints.Where(s => s.SprintID == _context.Comments
+            .Where(c => c.CommentId == id).FirstOrDefault().SprintID).Where(s => s.TeamID != currentUser.TeamID).Any())
+            {
+                throw new Exception("You can't access this comment!");
             }
+
             if (id == null)
             {
                 return NotFound();
@@ -173,21 +145,6 @@ namespace ScruMster.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var currentUser = await _userManager.GetUserAsync(User);
-            foreach (var commentCheck in _context.Comments)
-            {
-                if (commentCheck.CommentId == id)
-                {
-                    foreach (var sprintCheck in _context.Sprints)
-                    {
-                        if (commentCheck.SprintID == sprintCheck.SprintID && sprintCheck.TeamID != currentUser.TeamID)
-                        {
-                            throw new Exception("You can't access this comment!");
-
-                        }
-                    }
-                }
-            }
             var comment = await _context.Comments.FindAsync(id);
             _context.Comments.Remove(comment);
             await _context.SaveChangesAsync();
